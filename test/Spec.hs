@@ -1,5 +1,5 @@
 {-# LANGUAGE DataKinds, TypeOperators, TypeApplications #-}
-module Spec where
+module Main where
 import Data.Proxy
 import PCombinators
 import Data.Functor.Identity
