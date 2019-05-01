@@ -1,0 +1,36 @@
+name:                typelevel
+version:             0.1.0.0
+license:             BSD3
+author:              gbwey
+maintainer:          gbwey9@gmail.com
+copyright:           2019 Grant Weyburne
+
+extra-source-files:
+- README.md
+
+description:         Please see the README on GitHub at <https://github.com/gbwey/typelevel#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- lens
+- these
+- tagged
+- constraints
+- contravariant
+- symbols
+- profunctors
+
+library:
+  source-dirs: src
+
+tests:
+  typelevel-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - typelevel
+ 
