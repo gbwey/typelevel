@@ -1,3 +1,4 @@
+-- type level parser on strings treating strings of length one as a character
 {-# OPTIONS -Wall #-}
 -- {-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns #-}
 {-# LANGUAGE RankNTypes #-}

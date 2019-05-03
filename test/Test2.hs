@@ -257,6 +257,7 @@ ts1 :: ((
      ,QuickSort '[4,3,2,1] ~ '[1,2,3,4]
      ,QuickSortOn LESym0 '[4,3,2,1] ~ '[1,2,3,4]
      ,QuickSortOn (OnSym2 LESym0 FstSym0) '[ '("d",0), '("a",12), '("b",8), '("b",7) ] ~ '[ '("a",12), '("b",8), '("b",7), '("d",0) ]
+     ,QuickSortOn (OnSym2 EqSym0 FstSym0) (Reverse '[ '("a",Bool), '("b",Int), '("c",Double) ]) ~ '[ '("a",Bool), '("b",Int), '("c",Double) ]
      ,DupsBy (OnSym2 EqSym0 FstSym0) '[ '("d",0), '("a",12), '("b",8), '("b",7) ] ~ '[ '("b",8), '("b",7) ]
      ,Dups '[2,3,1,4,2,7,1,2] ~ '[2,2,2,1,1]
      ,Tails '[1,2,3,4] ~ '[ '[1,2,3,4], '[2,3,4], '[3,4], '[4], '[] ]
@@ -279,6 +280,12 @@ ts3 :: ((
       ,Subset '[1] '[]  ~ 'False
       ,Subset '[1,2] '[2,1,3]  ~ 'True
       ,Subset '[1,2,4] '[2,1,3]  ~ 'False
+      ,Subset '[] '[ '("a",Int), '("b",Int), '("c",Double) ] ~ 'True
+      ,Subset '[ '("b",Int), '("c",Double) ] '[ '("a",Int), '("b",Int), '("c",Double) ] ~ 'True
+      ,Subset '[ '("c",Int), '("b",Double) ] '[ '("a",Int), '("b",Int), '("c",Double) ] ~ 'False
+      ,Subset '[ '("c",Double), '("b",Int) ] '[ '("a",Int), '("b",Int), '("c",Double) ] ~ 'True
+      ,Subset '[ '("c",Double), '("b",Int), '("b",Int) ] '[ '("a",Int), '("b",Int), '("c",Double) ] ~ 'False
+      ,Subset '[ '("c",Double), '("b",Int), '("b",Int) ] '[ '("a",Int), '("b",Int), '("c",Double), '("b",Int) ] ~ 'True
        ) => ()) -> ()
 ts3 x = x
 

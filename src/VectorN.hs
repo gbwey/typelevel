@@ -1,3 +1,4 @@
+-- Vec is an inductive defined vector that can be work in multiple dimensions
 {-# OPTIONS -Wall #-}
 -- {-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns #-}
 {-# LANGUAGE RankNTypes #-}
@@ -100,7 +101,7 @@ instance (Applicative (Vec n), VPure n) => Applicative (Vec ('S n)) where
 instance Foldable (Vec n) => FoldableWithIndex Int (Vec n) where
   ifoldMap iam = ifoldMap iam . toList
 
-instance (Functor (Vec n)) => FunctorWithIndex Int (Vec n) where
+instance Functor (Vec n) => FunctorWithIndex Int (Vec n) where
   imap = vimap 0
 
 vimap :: Num i => i -> (i -> a -> b) -> Vec n a -> Vec n b
@@ -727,13 +728,13 @@ data Y2 (a :: Bool) :: TyFun a a -> Type -- different 'a'
 
 -- this one put Bool inside the 'a'
 data Z2 (a :: Bool) (b :: TyFun a a) :: Type
-
+{-
 checkTrueIsFalse :: 'True ~ 'False => ()
 checkTrueIsFalse = ()
 
 checkTrueIsTrue :: ('True ~ 'True => ()) -> ()
 checkTrueIsTrue x = x
-
+-}
 type family VMin (m :: N) (n :: N) :: N where
   VMin 'Z n = 'Z
   VMin m 'Z = 'Z
