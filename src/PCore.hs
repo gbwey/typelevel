@@ -1614,9 +1614,13 @@ type instance Apply IntercalateSym0 x = IntercalateSym1 x
 data IntercalateSym1 :: Symbol -> [Symbol] ~> Symbol
 type instance Apply (IntercalateSym1 x) y = Intercalate x y
 
-
 type family ElemList (x :: a) (xs :: [a]) :: Bool where
-  ElemList x xs = Foldr (OrSym0 :.: EqSym1 x) 'False xs
+  ElemList x '[] = 'False
+  ElemList x (x ': xs) = 'True
+  ElemList x (x1 ': xs) = ElemList x xs
+
+--type family ElemList (x :: a) (xs :: [a]) :: Bool where
+--  ElemList x xs = Foldr (OrSym0 :.: EqSym1 x) 'False xs
 
 data ElemListSym0 :: a ~> [a] ~> Bool
 type instance Apply ElemListSym0 x = ElemListSym1 x
@@ -1669,10 +1673,25 @@ type instance Apply Any'Sym0 x = Any'Sym1 x
 data Any'Sym1 :: (k ~> Bool) -> [k] ~> Bool
 type instance Apply (Any'Sym1 x) y = Any' x y
 
--- partial application of 'f'
--- all is good until you need a partially applied type synonym
--- ie if you dont need Sym* then all is good
--- with these we can get pretty far
+{-
+https://gitlab.haskell.org/ghc/ghc/issues/13962
+We currently permit any and all uses of unsaturated type synonyms and type families in
+GHCi's `:kind` command
+
+We made a special case for :kind some years ago to allow queries like :kind Map. The user
+sensibly wants Map's kind, and we should give it to them. So the TF-saturation requirement
+is dropped in :kind
+
+partial application of 'f'
+all is good until you need a partially applied type synonym
+ie if you dont need Sym* then all is good
+works fine with constraints eg Show Ord etc
+works fine for type constructors eg 'Just Maybe
+doesnt work for type families cos not fully saturated although :kind! works
+  :kind! works differently so does allow unsaturated type families
+  :kind! MapT ((+) 4) '[3,5]
+  :kind! MapT (AppendSymbol "tt") '["aaa","Bb"]
+-}
 type family MapT (f :: k -> k1) (xs :: [k]) :: [k1] where
   MapT f '[]       = '[]
   MapT f (x ': xs) = f x ': MapT f xs
@@ -1736,6 +1755,29 @@ MapT 'Just '[1,5,5] :: [Maybe Nat]
 MapT Const '[(),(),Void] :: [k -> *]
 = '[Const (), Const (), Const Void]
 
+>:kind! MapT Show '[Int,Double]
+MapT Show '[Int,Double] :: [Constraint]
+= '[Show Int, Show Double]
+
+>:kind! MapT Maybe '[Int,Double]
+MapT Maybe '[Int,Double] :: [*]
+= '[Maybe Int, Maybe Double]
+
+-- only works with :kind!
+>:kind! MapT ((+) 4) '[3,5]
+MapT ((+) 4) '[3,5] :: [Nat]
+= '[7, 9]
+
+-- only works with :kind!
+>:kind! MapT (AppendSymbol "tt") '["aaa","Bb"]
+MapT (AppendSymbol "tt") '["aaa","Bb"] :: [Symbol]
+= '["ttaaa", "ttBb"]
+
+-- only works with :kind!
+>:kind! FoldrT (+) 99 '[2,3,4]
+FoldrT (+) 99 '[2,3,4] :: Nat
+= 108
+
 >:kind! ZipWithT '(,) '[99] '[1,2,3,4,5]
 ZipWithT '(,) '[99] '[1,2,3,4,5] :: [(Nat, Nat)]
 = '(99, 1) : (TypeError ...)
@@ -1756,4 +1798,21 @@ ElemT ((GL.<=?) 4) '[2,3,10,12,13] :: Maybe Nat
 >:kind! ElemT ((GL.<=?) 100) '[2,3,10,12,13]
 ElemT ((GL.<=?) 100) '[2,3,10,12,13] :: Maybe Nat
 = 'Nothing
+-}
+
+
+type family Foo (x :: Bool) (y :: Bool) :: Bool where
+  Foo 'True _ = 'True
+  Foo 'False b = b
+type family Bar :: Bool -> Bool -> Bool where -- this is what gets returned!! but no args!
+--  Bar 'True _ = 'True
+--  Bar 'False b = b
+
+{- same kind signature but they are different: first takes 2 args the second none
+>:kind! Bar
+Bar :: Bool -> Bool -> Bool
+= Bar
+>:kind! Foo
+Foo :: Bool -> Bool -> Bool
+= Foo
 -}
