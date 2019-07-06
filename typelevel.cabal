@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.0.
+-- This file has been generated from package.yaml by hpack version 0.31.1.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7989ab282b415e01578fee6034ca29bb8f71095a8c99bb8a656bdb4e6aacdb74
+-- hash: c04d263a0729887ef7bf087e99aaf334680113bc50872de5fae2136eab240fd3
 
 name:           typelevel
 version:        0.1.0.0
@@ -89,6 +89,7 @@ test-suite typelevel-test
       base >=4.7 && <5
     , constraints
     , contravariant
+    , easytest
     , lens
     , profunctors
     , symbols

@@ -33,4 +33,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - typelevel
+    - easytest
+
  

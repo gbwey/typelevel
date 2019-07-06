@@ -39,6 +39,7 @@ import Data.Proxy
 import Data.Tagged
 import Control.Applicative
 import Data.Constraint
+import Data.Void
 
 type family SAS :: STA S0 A0 where
   SAS = 'STA (KSym1 '( 'A0, 'S0))
@@ -437,3 +438,13 @@ t222 :: (Test2 LoopSym0 0 ~ '() => ()) -> ()
 t222 x = x
 
 
+ts99 :: ((
+  MapT 'Just '[1,5,5] ~ '[ 'Just 1, 'Just 5, 'Just 5 ]
+ ,MapT Const '[(),(),Void] ~ '[Const (), Const (), Const Void]
+ ,MapT Show '[Int,Double] ~ '[Show Int, Show Double]
+ ,MapT Maybe '[Int,Double] ~ '[Maybe Int, Maybe Double]
+-- ,MapT ((+) 4) '[3,5] ~ '[7, 9]   -- works using :kind! only (partially applied)
+-- ,MapT (TL.AppendSymbol "tt") '["aaa","Bb"] ~ '["ttaaa", "ttBb"] -- works using :kind! only (partially applied)
+-- ,FoldrT (+) 99 '[2,3,4] ~ 108 -- works using :kind! only (partially applied)
+       ) => ()) -> ()
+ts99 () = ()
