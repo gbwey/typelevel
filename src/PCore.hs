@@ -23,6 +23,7 @@
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE NoStarIsType #-}
 module PCore where
 import Data.Type.Equality -- only using it for Nat ==. use PEq for all other uses!
 import Data.Constraint
@@ -1038,6 +1039,11 @@ instance KnownNat n => GetNat n where
 instance KnownNat (Len (S.ToList n)) => GetNat n where
   getNat = natVal (Proxy @(Len (S.ToList n)))
   getNatP _ = getNat @n
+{-
+>getNats @'[ "adf","dd" ]
+[3,2]
+it :: [GHC.Natural.Natural]
+-}
 
 {- needs work
 -- make c apply to the whole list

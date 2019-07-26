@@ -20,6 +20,7 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE NoStarIsType #-}
 
 module PNum where
 import GHC.TypeNats
