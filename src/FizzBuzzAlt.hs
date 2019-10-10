@@ -13,7 +13,7 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeInType #-}
+-- {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
 
 module FizzBuzzAlt where

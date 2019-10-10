@@ -1,0 +1,4 @@
+.stack-work/
+typelevel.cabal
+*~
+.stack-work-profile/

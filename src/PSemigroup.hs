@@ -8,21 +8,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
--- {-# LANGUAGE KindSignatures #-} -- implied by TypeFamilies
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
--- {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveFunctor #-}
-
 module PSemigroup where
 import GHC.TypeNats
 import GHC.TypeLits hiding (natVal,natVal')
@@ -230,7 +222,7 @@ D:\haskell\vectorn.hs:4751:15-19: error:
 
 
 -- need our own version of Endo cos can partially apply types!
-data EndoX a = EndoX (a ~> a)
+newtype EndoX a = EndoX (a ~> a)
 --data EndoSym0 :: a ~> a
 --type instance Apply EndoSym0 x = EndoX x
 

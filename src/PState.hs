@@ -8,18 +8,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveFunctor #-}
 
 module PState where
 import PCore
@@ -40,10 +35,9 @@ instance PFunctor (STA s) where
 instance PApplicative (STA s) where
   type Pure a = 'STA (TyCon1Sym1 ('(,) a))
   type 'STA sab <*> 'STA sa =
-    'STA ((AmpSym2
-               (UnCurrySym1 Id :.: (AmpSym2 FstSym0 (FstSym0 :.: SndSym0)))
+    'STA (AmpSym2
+               (UnCurrySym1 Id :.: AmpSym2 FstSym0 (FstSym0 :.: SndSym0))
                (SndSym0 :.: SndSym0)
-          )
           :.: (SecondSym1 sa :.: sab)
          )
 

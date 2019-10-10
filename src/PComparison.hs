@@ -8,19 +8,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveFunctor #-}
-
 module PComparison where
 import PCore
 import PContravariant
@@ -83,8 +77,8 @@ instance Divisible CC where
   conquer = CC (const (const EQ))
   divide abc (CC p) (CC p1) =
           CC $ \a a1 -> on (curry (uncurry (<>) .
-                         ((uncurry p . (((fst . fst) &&& (fst . snd)))   &&&   ((uncurry p1 . ((snd . fst) &&& (snd . snd))))))
-                         )) abc a $ a1
+                         (uncurry p . ((fst . fst) &&& (fst . snd))   &&&   (uncurry p1 . ((snd . fst) &&& (snd . snd))))
+                         )) abc a a1
 
 
 instance Semigroup (CC a) where

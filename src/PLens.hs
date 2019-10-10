@@ -9,19 +9,12 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
 module PLens where
 import GHC.TypeNats
@@ -70,7 +63,7 @@ data ToListOfSym1 :: ((a ~> Const [a] a) ~> s ~> Const [a] s) -> s ~> [a]
 type instance Apply (ToListOfSym1 x) y = ToListOf x y
 
 type family Has (l :: PLensLike' (Const SG.Any) s a) (arg1 :: s) where
-  Has l s = UnAny (UnConst (l @@ (KSym1 ('Const ('SG.Any 'True))) @@ s))
+  Has l s = UnAny (UnConst (l @@ KSym1 ('Const ('SG.Any 'True)) @@ s))
 
 type family View (l :: PLensLike' (Const a) s a) (arg1 :: s) where
   View l s = UnConst (l @@ TyCon1Sym1 'Const @@ s)

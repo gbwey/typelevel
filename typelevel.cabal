@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c04d263a0729887ef7bf087e99aaf334680113bc50872de5fae2136eab240fd3
+-- hash: 54c2a6de93a8d433688b3f3faae1d500b55eb7c7adea9a4be369dcc462f60368
 
 name:           typelevel
 version:        0.1.0.0
@@ -63,6 +63,7 @@ library
       Paths_typelevel
   hs-source-dirs:
       src
+  ghc-options: -fomit-interface-pragmas
   build-depends:
       base >=4.7 && <5
     , constraints
@@ -84,7 +85,7 @@ test-suite typelevel-test
       Paths_typelevel
   hs-source-dirs:
       test
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -fomit-interface-pragmas -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , constraints

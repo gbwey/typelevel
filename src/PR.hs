@@ -8,18 +8,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveFunctor #-}
 
 module PR where
 import PCore
@@ -84,11 +79,11 @@ instance PSemigroup a => PSemigroup (R e a) where
 
 
 instance PFunctorWithIndex (R (e :: Type)) where
-  type Imap f ('R ea) = 'R (UnCurrySym1 f :.: AmpSym2 (ToFWI_R :.: AmpSym2 Id ea)  ea)
+  type Imap f ('R ea) = 'R (UnCurrySym1 f :.: AmpSym2 (ToFWIR :.: AmpSym2 Id ea)  ea)
 
 -- coercion worked from (e,a) to FWI (R e a)
-data ToFWI_R :: (e,a) ~> FWI (R e a)
-type instance Apply ToFWI_R '(e,a) = e
+data ToFWIR :: (e,a) ~> FWI (R e a)
+type instance Apply ToFWIR '(e,a) = e
 
 
 

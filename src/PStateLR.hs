@@ -9,19 +9,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveFunctor #-}
-
 module PStateLR where
 import PCore
 import PBifunctor
@@ -73,7 +67,7 @@ type instance Apply (STLRBindSym2 sa amb) s = STLRBind (sa @@ s) amb
 
 type family STLRBind (lra :: Either e (a,s)) (amb :: a ~> STLR e s b) :: Either e (b,s) where
   STLRBind ('Left e) amb = 'Left e
-  STLRBind ('Right '(a,s)) amb = (UnSTLR (amb @@ a)) @@ s
+  STLRBind ('Right '(a,s)) amb = UnSTLR (amb @@ a) @@ s
 
 instance PSemigroup a => PSemigroup (STLR e s a) where
   type sa <> sa1 = SAppSym0 <$> sa <*> sa1

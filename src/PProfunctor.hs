@@ -16,19 +16,13 @@ to (Either c a).
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveFunctor #-}
-
 module PProfunctor where
 --import Data.Kind (Type)
 import Data.Profunctor
@@ -129,7 +123,7 @@ instance Profunctor RR where
   dimap f g (RR ea) = RR (g . ea . f)
 
 instance Choice RR where
-  right' (RR ea) = RR (either Left (Right . ea))
+  right' (RR ea) = RR (fmap ea)
 
 
 

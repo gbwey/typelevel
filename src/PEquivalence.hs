@@ -8,21 +8,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
--- {-# LANGUAGE KindSignatures #-} -- implied by TypeFamilies
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
--- {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveFunctor #-}
-
 module PEquivalence where
 import PCore
 import PContravariant
@@ -84,8 +76,9 @@ instance Divisible EE where
   conquer = EE (const (const True))
   divide abc (EE p) (EE p1) =
           EE $ \a a1 -> on (curry (uncurry (&&) .
-                         ((uncurry p . (((fst . fst) &&& (fst . snd)))   &&&   ((uncurry p1 . ((snd . fst) &&& (snd . snd))))))
-                         )) abc a $ a1
+                               (uncurry p . ((fst . fst) &&& (fst . snd))
+                           &&& (uncurry p1 . ((snd . fst) &&& (snd . snd))))
+                         )) abc a a1
 
 
 instance Semigroup (EE a) where

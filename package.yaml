@@ -22,6 +22,8 @@ dependencies:
 
 library:
   source-dirs: src
+  ghc-options: 
+  - -fomit-interface-pragmas    
 
 tests:
   typelevel-test:
@@ -29,6 +31,7 @@ tests:
     source-dirs:         test
     ghc-options:
     - -threaded
+    - -fomit-interface-pragmas    
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:

@@ -8,20 +8,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE ConstraintKinds #-}
-
 module PApplicative where
 import Data.Kind (Type)
 import Control.Lens hiding (Cons)
@@ -49,7 +42,7 @@ class PFunctor f => PApplicative (f :: Type -> Type) where
   infixl 4 <*
 
   type family (*>) (arg :: f a) (arg1 :: f b) :: f b
-  type x *> xs = (FlipSym1 KSym0) <$> x <*> xs
+  type x *> xs = FlipSym1 KSym0 <$> x <*> xs
   infixl 4 *>
 
   type family LiftA (arg :: (a ~> b)) (arg1 :: f a) :: f b
