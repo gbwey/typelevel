@@ -1,5 +1,4 @@
 {-# OPTIONS -Wall #-}
--- {-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -10,10 +9,8 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
--- {-# LANGUAGE KindSignatures #-} -- implied by TypeFamilies
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
--- {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -29,7 +26,6 @@ import GHC.TypeLits hiding (natVal,natVal')
 import PCombinators
 import VectorN
 import qualified Data.Symbol.Ascii as S
---import qualified Data.Symbol.Utils as S -- just classes for extracting values
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.Functor.Compose
 import Data.Functor.Const
@@ -331,4 +327,5 @@ t150a :: (
 
     ) => ()) -> ()
 t150a x = x
+
 

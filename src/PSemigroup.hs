@@ -1,5 +1,4 @@
 {-# OPTIONS -Wall #-}
--- {-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -19,20 +18,16 @@ module PSemigroup where
 import GHC.TypeNats
 import GHC.TypeLits hiding (natVal,natVal')
 import Data.Kind (Type)
---import Control.Lens hiding (Cons)
 import Data.Constraint
 import qualified Data.Monoid as MM
 import qualified Data.Semigroup as SG
---import qualified Data.List.NonEmpty as NE
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.These
 import Data.Void
 import PCore
 import PNum
---import PFunctor
 import Data.Functor.Const
 import Data.Functor.Identity
---import PEq
 import Data.Type.Equality
 import Data.Ord
 import Data.Tagged
@@ -329,14 +324,14 @@ instance PSemigroup (Either x y) where
   type 'Left a <> 'Right b = 'Right b
   type 'Right b <> 'Left a1 = 'Right b
   type 'Right a <> 'Right a1 = 'Right a1
-  type SUnWrap me = me  -- dont use x or y cos mentioned on the head and will mess u up
+  type SUnWrap me = me  -- dont use x or y cos mentioned on the head cos will cause problems
 
 {-
 -- this fails: have to be explicit
 instance PSemigroup (Either x y) where
   type 'Left a <> b = b
   type 'Right a <> x = 'Right a
-  type SUnWrap me = me  -- dont use x or y cos mentioned on the head and will mess u up
+  type SUnWrap me = me  -- dont use x or y cos mentioned on the head and will cause problems
 -}
 {-
 D:\haskell\typelevel\src\PSemigroup.hs:323:20: error:

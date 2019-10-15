@@ -1,7 +1,4 @@
--- use IToList' instead of FWI version in lens using IToList
--- the FWI version will mess things up! might have partly cos my signatures were not accurate when call IxListSym1 cos not taking FWI into account from IToList
 {-# OPTIONS -Wall #-}
--- {-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE UndecidableInstances #-}

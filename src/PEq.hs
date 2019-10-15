@@ -1,7 +1,6 @@
 -- for safety just use DTE.== cos has the best coverage
 -- PEq ie == has too many gaps but is useful for POrd
 {-# OPTIONS -Wall #-}
--- {-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}

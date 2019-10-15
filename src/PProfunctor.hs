@@ -1,13 +1,4 @@
--- prisms are too hard: need a different representation
-{-
-A lens describes something isomorphic to a product with some extra context. A lens from s
-to a indicates there exists c such that s is isomorphic to (c, a).
-
-On the other hand, a prism from s to a indicates there exists c such that s is isomorphic
-to (Either c a).
--}
 {-# OPTIONS -Wall #-}
--- {-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -24,10 +15,7 @@ to (Either c a).
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
 module PProfunctor where
---import Data.Kind (Type)
 import Data.Profunctor
---import Control.Lens.Prism
---import Control.Lens.Internal.Prism
 import PCore
 import PFunctor
 import PBifunctor

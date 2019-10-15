@@ -1,6 +1,5 @@
 {-# OPTIONS -Wall #-}
 {-# OPTIONS -fprint-explicit-kinds #-}
--- {-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}

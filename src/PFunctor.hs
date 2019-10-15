@@ -1,5 +1,4 @@
 {-# OPTIONS -Wall #-}
--- {-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -16,13 +15,10 @@
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
 module PFunctor where
---import GHC.TypeLits
 import Data.Proxy
 import Data.Kind (Type)
 import Control.Lens hiding (Cons)
---import qualified Data.Monoid as MM
 import qualified Data.Semigroup as SG
---import qualified Data.List.NonEmpty as NE
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.Functor.Compose
 import Data.These -- add a functor instance and semigroup etc
