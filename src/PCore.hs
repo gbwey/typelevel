@@ -1,4 +1,4 @@
-{-# OPTIONS -Wall #-}
+{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -15,7 +15,6 @@
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TupleSections #-}
-{-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveFunctor #-}
@@ -31,6 +30,7 @@ import GHC.TypeLits hiding (natVal,natVal')
 import Data.Kind (Type)
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.These
+import Data.These.Combinators
 import Data.Proxy
 import Data.Tagged
 import qualified Data.Semigroup as SG

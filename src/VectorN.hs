@@ -1,5 +1,5 @@
 -- Vec is an inductive defined vector that can be work in multiple dimensions
-{-# OPTIONS -Wall #-}
+{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -16,7 +16,6 @@
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TupleSections #-}
-{-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE LambdaCase #-}
@@ -550,7 +549,7 @@ instance (NToInts (n1 ': n2 ': n3 ': ns), FoldMap (KnownNatSym0 :.: ToNatSym0) (
                             intercalate " || " $ toList $ x2 <&> \x3 -> show x3
     in zs ++ "\n" ++ ys
 
-showv3 :: forall ns a v . (VShow3 ns a, Show v, ns ~ DimNS v, v ~ UnDim (DimNS v) (DimA v), a ~ DimA v, NToInts ns, Show a) => v -> String
+showv3 :: forall ns a v . (VShow3 ns a, ns ~ DimNS v, v ~ UnDim (DimNS v) (DimA v), a ~ DimA v, NToInts ns, Show a) => v -> String
 showv3 v  =
   let ns = getNToInts @ns
   in show ns ++ vshow3 @ns @a v

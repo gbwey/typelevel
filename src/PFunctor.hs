@@ -1,4 +1,4 @@
-{-# OPTIONS -Wall #-}
+{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -12,7 +12,6 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeInType #-}
 {-# LANGUAGE ConstraintKinds #-}
 module PFunctor where
 import Data.Proxy
@@ -22,6 +21,7 @@ import qualified Data.Semigroup as SG
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.Functor.Compose
 import Data.These -- add a functor instance and semigroup etc
+import Data.These.Combinators
 import Data.Ord
 import PCore
 import Data.Tagged

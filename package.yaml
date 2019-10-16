@@ -13,7 +13,9 @@ description:         Please see the README on GitHub at <https://github.com/gbwe
 dependencies:
 - base >= 4.7 && < 5
 - lens
-- these
+- these >= 1.0
+- these-lens
+- semialign
 - tagged
 - constraints
 - contravariant
