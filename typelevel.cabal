@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5337e1975badb480d9116dafcf4d16ac7e25107696dbaf7b6d286ce7bf37ca93
+-- hash: 9bce0141cb313ba1b7bf95eaba71939096cf25fea6ada3ccf57bac7209f4f36e
 
 name:           typelevel
 version:        0.1.0.0
@@ -70,9 +70,11 @@ library
     , contravariant
     , lens
     , profunctors
+    , semialign
     , symbols
     , tagged
-    , these
+    , these >=1.0
+    , these-lens
   default-language: Haskell2010
 
 test-suite typelevel-test
@@ -92,10 +94,12 @@ test-suite typelevel-test
     , contravariant
     , lens
     , profunctors
+    , semialign
     , symbols
     , tagged
     , tasty
     , tasty-hunit
-    , these
+    , these >=1.0
+    , these-lens
     , typelevel
   default-language: Haskell2010
