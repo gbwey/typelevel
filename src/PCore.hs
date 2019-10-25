@@ -30,7 +30,6 @@ import GHC.TypeLits hiding (natVal,natVal')
 import Data.Kind (Type)
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.These
-import Data.These.Combinators
 import Data.Proxy
 import Data.Tagged
 import qualified Data.Semigroup as SG

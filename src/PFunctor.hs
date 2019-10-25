@@ -21,7 +21,6 @@ import qualified Data.Semigroup as SG
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.Functor.Compose
 import Data.These -- add a functor instance and semigroup etc
-import Data.These.Combinators
 import Data.Ord
 import PCore
 import Data.Tagged
