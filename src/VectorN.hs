@@ -1,5 +1,9 @@
 -- Vec is an inductive defined vector that can be work in multiple dimensions
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
+{-# OPTIONS -Wall #-}
+{-# OPTIONS -Wcompat #-}
+{-# OPTIONS -Wincomplete-record-updates #-}
+{-# OPTIONS -Wno-incomplete-uni-patterns #-}
+{-# OPTIONS -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}

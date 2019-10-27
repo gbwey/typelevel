@@ -1,4 +1,8 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
+{-# OPTIONS -Wall #-}
+{-# OPTIONS -Wcompat #-}
+{-# OPTIONS -Wincomplete-record-updates #-}
+{-# OPTIONS -Wincomplete-uni-patterns #-}
+{-# OPTIONS -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
