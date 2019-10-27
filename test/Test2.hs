@@ -443,3 +443,25 @@ ts99 :: ((
 -- ,FoldrT (+) 99 '[2,3,4] ~ 108 -- works using :kind! only (partially applied)
        ) => ()) -> ()
 ts99 () = ()
+
+{-
+ff :: Mconcat (TyCon1Sym0 <$> '[Show, Read] <*> '[a,b]) => a -> b -> (String,String)
+ff a b = (show a,show b)
+
+gg :: ConstraintCartesian '[Show, Read] '[a,b] => a -> b -> (String,String)
+gg a b = (show a,show b)
+-}
+
+{-
+>:kind! ConstraintCartesian '[Show] '[Int] == (Show Int, (() :: Constraint))
+ConstraintCartesian '[Show] '[Int] == (Show Int, (() :: Constraint)) :: Bool
+= 'True
+
+>:kind! ConstraintCartesian '[Show,Read] '[Int] == (Show Int, (Read Int, (() :: Constraint)))
+ConstraintCartesian '[Show,Read] '[Int] == (Show Int, (Read Int, (() :: Constraint))) :: Bool
+= 'True
+
+>:kind! ConstraintCartesian '[Show,Read] '[Int,Double] == (Show Int, (Show Double, (Read Int, (Read Double, (() :: Constraint)))))
+ConstraintCartesian '[Show,Read] '[Int,Double] == (Show Int, (Show Double, (Read Int, (Read Double, (() :: Constraint))))) :: Bool
+= 'True
+-}
