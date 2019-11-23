@@ -65,6 +65,7 @@ data Vec n (a :: Type) where
 
 infixr 1 `VS`
 
+{-# COMPLETE (:&) #-}
 pattern (:&) :: forall (n :: N) a.
                       () =>
                       forall (n1 :: N). (n ~ 'S n1) => a -> Vec n1 a -> Vec n a
