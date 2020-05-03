@@ -7,17 +7,12 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveFunctor #-}
 module Test1 where
 import Data.Type.Equality
 import GHC.TypeNats
@@ -50,12 +45,12 @@ t111 :: ((
    AllF (PEqSym1 4) '[SuccSym0 @@ 3, SuccSym1 3] ~ 'True
   ,AllF (PEqSym1 10) '[SumSym0 @@ 3 @@ 7, SumSym1 3 @@ 7, 3 + 7] ~ 'True
   ,AllF (PEqSym1 '(13, "abc")) '[FirstSym0 @@ SuccSym0 @@ '(12, "abc"), FirstSym1 SuccSym0 @@ '(12, "abc"), First SuccSym0 '(12, "abc")] ~ 'True
-  ,AllF (PEqSym1 '("xyz", 13)) '[(('R (PairSym1 "xyz" :.: PredSym0)) & UnRSym0) @@ 14] ~ 'True
+  ,AllF (PEqSym1 '("xyz", 13)) '[('R (PairSym1 "xyz" :.: PredSym0) & UnRSym0) @@ 14] ~ 'True
   ,AllF (PEqSym1 ('S ('S ('S ('S ('S 'Z)))))) '[PSucc (ToN 4), FromInteger (PSucc 4), PPred (ToN 6), PSuccSym0 @@ ToN 4, PPredSym0 @@ ToN 6] ~ 'True
   ,AllF (PEqSym1 5) '[PSucc 4, PPred 6, ToInteger (PPred (ToN 6)), PSuccSym0 @@ 4, PPredSym0 @@ 6] ~ 'True
   ,AnyF (PEqSym1 4) '[1,2,4,5] ~ 'True
   ,AnyF (PEqSym1 7) '[1,2,4,5] ~ 'False
-  ,((('R (PairSym1 "xyz" :.: PredSym0)) & UnRSym0) @@ 14) ~ '("xyz", 13)
+  ,(('R (PairSym1 "xyz" :.: PredSym0) & UnRSym0) @@ 14) ~ '("xyz", 13)
   ,'[PSucc (ToN 4), FromInteger (PSucc 4), PPred (ToN 6), PSuccSym0 @@ ToN 4, PPredSym0 @@ ToN 6] ~ '[ 'S ('S ('S ('S ('S 'Z)))), 'S ('S ('S ('S ('S 'Z)))), 'S ('S ('S ('S ('S 'Z)))), 'S ('S ('S ('S ('S 'Z)))), 'S ('S ('S ('S ('S 'Z)))) ]
   ,(EqSym1 Nat @@ Nat) ~ 'True -- same as ==
   ,(Nat == Nat) ~ 'True
@@ -204,12 +199,12 @@ type GG142a = '(2, 14, 'Just ('Just "abc"))
 t1251 :: ((
      (UnPredicateX ('PredicateX (LTSym1 10)) @@ 5) ~ 'False
     ,(UnPredicateX ('PredicateX (LTSym1 10)) @@ 15) ~ 'True
-    ,(UnPredicateX (UnCurrySym1 PAddSym0 >$<('PredicateX (LTSym1 10))) @@ '(3,7)) ~ 'False
-    ,(UnPredicateX (UnCurrySym1 PAddSym0 >$<('PredicateX (LTSym1 10))) @@ '(3,8)) ~ 'True
+    ,(UnPredicateX (UnCurrySym1 PAddSym0 >$< 'PredicateX (LTSym1 10)) @@ '(3,7)) ~ 'False
+    ,(UnPredicateX (UnCurrySym1 PAddSym0 >$< 'PredicateX (LTSym1 10)) @@ '(3,8)) ~ 'True
     ) => ()) -> ()
 t1251 x = x
 
-t1252 :: ((SuccSym0 <$> ('Compose ('Just '[2,3,4]))) ~ 'Compose ('Just '[3,4,5]) => ()) -> ()
+t1252 :: (SuccSym0 <$> 'Compose ('Just '[2,3,4]) ~ 'Compose ('Just '[3,4,5]) => ()) -> ()
 t1252 x = x
 
 t1253 :: (Sequence ('Just '[2,3,4]) ~ '[ 'Just 2, 'Just 3, 'Just 4] => ()) -> ()
@@ -221,17 +216,17 @@ t1254a :: ((
       ) => ()) -> ()
 t1254a x = x
 
-t1254b :: (((Traverse (CaseWhenSym2 '[ '(BetweenSym2 0 2, ThisSym0), '(BetweenSym2 3 6, ThatSym0), '(GTSym1F 6, TheseSym1 999) ] ('These 0 0)) ('Compose ('Just ('Just 23)))) ~ 'These 999 ('Compose ('Just ('Just 23)))) => ()) -> ()
+t1254b :: ((Traverse (CaseWhenSym2 '[ '(BetweenSym2 0 2, ThisSym0), '(BetweenSym2 3 6, ThatSym0), '(GTSym1F 6, TheseSym1 999) ] ('These 0 0)) ('Compose ('Just ('Just 23))) ~ 'These 999 ('Compose ('Just ('Just 23)))) => ()) -> ()
 t1254b x = x
 
-t1254c :: (((Traverse (CaseWhenSym2 '[ '(BetweenSym2 0 2, ThisSym0), '(BetweenSym2 3 6, ThatSym0), '(GTSym1F 6, TheseSym1 999) ] ('These 0 0)) ('Compose ('Just ('[23])))) ~ 'These 999 ('Compose ('Just ('[23])))) => ()) -> ()
+t1254c :: ((Traverse (CaseWhenSym2 '[ '(BetweenSym2 0 2, ThisSym0), '(BetweenSym2 3 6, ThatSym0), '(GTSym1F 6, TheseSym1 999) ] ('These 0 0)) ('Compose ('Just '[23])) ~ 'These 999 ('Compose ('Just '[23]))) => ()) -> ()
 t1254c x = x
 
 t1257 :: ((Traverse (TyCon1Sym1 'Just :.: SuccSym0) '[2,3] ~ 'Just '[3,4]) => ()) -> ()
 t1257 x = x
 
-t1254 :: ((Traverse (CaseWhenSym2 '[ '(BetweenSym2 0 2, ThisSym0), '(BetweenSym2 3 6, ThatSym0), '(GTSym1F 6, TheseSym1 999) ] ('These 0 0))
-              ('Compose ('Just '[0,3,4]))) ~ 'These 0 ('Compose ('Just '[3, 4])) => ()) -> ()
+t1254 :: (Traverse (CaseWhenSym2 '[ '(BetweenSym2 0 2, ThisSym0), '(BetweenSym2 3 6, ThatSym0), '(GTSym1F 6, TheseSym1 999) ] ('These 0 0))
+              ('Compose ('Just '[0,3,4])) ~ 'These 0 ('Compose ('Just '[3, 4])) => ()) -> ()
 t1254 x = x
 
 t1255 :: ((
@@ -264,7 +259,7 @@ t146 :: ((
        ,SecondSym0 @@ SuccSym0 @@ '("sadf",1) ~ '("sadf", 2)
        ,SecondSym1 SuccSym0 @@ '("sadf",1) ~ '("sadf", 2)
        ,Join '("ss", '("tt",33)) ~ '("sstt", 33)
-       ,UnR (('R (KSym1 ('R SuccSym0))) >>= Id) @@ 123 ~ 124
+       ,UnR ('R (KSym1 ('R SuccSym0))) >>= Id @@ 123 ~ 124
        ,UnR (Join ('R (KSym1 ('R SuccSym0)))) @@ 12 ~ 13
        ,('SG.Arg 4 "b" `Compare` 'SG.Arg 4 "a") ~ 'EQ
        ,('SG.Arg 4 "z" `Compare` 'SG.Arg 5 "a") ~ 'LT

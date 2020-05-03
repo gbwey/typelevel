@@ -22,7 +22,6 @@
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE PatternSynonyms #-}
-{-# LANGUAGE LambdaCase #-}
 module VectorN where
 import qualified Data.Type.Equality as DTE
 import Data.Proxy
@@ -614,21 +613,11 @@ type family DimP v :: [(N, Type)] where
 
 type family DimAll v where DimAll v = Second LstSym0 (UnZip (DimP v))
 
-test1 :: Monad m => m (a -> b) -> m a -> m b
-test1 mab ma = join $ fmap (\a -> mab >>= \ab -> return (ab a)) ma
-
-test1a :: Monad m => m (a -> b) -> m a -> m b
-test1a mab ma = join $ fmap (\ab -> ma >>= \a -> return (ab a)) mab
-
-
 type family MAB :: (Symbol, A0 ~> B0) where
   MAB = '("dude", KSym1 'B0)
 
 type family MA :: (Symbol, A0) where
   MA = '("after", 'A1)
-
-
-
 
 -- this works on the type Vec ===
 class PEq1 (a :: k) where

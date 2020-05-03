@@ -13,13 +13,8 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NoStarIsType #-}
 module PCore where
 import Data.Type.Equality -- only using it for Nat ==. use PEq for all other uses!
@@ -1391,7 +1386,7 @@ type family DupsBy (f :: a ~> a ~> Bool) (as :: [a]) :: [a] where
   DupsBy f (a ': as) = DupsBy' f (Partition (f @@ a) (a ': as))
 
 type family DupsBy' (f :: a ~> a ~> Bool) (tps :: ([a], [a])) :: [a] where
-  DupsBy' f '(bs,cs) = (If (Len bs == 1) '[] bs) ++ DupsBy f cs
+  DupsBy' f '(bs,cs) = If (Len bs == 1) '[] bs ++ DupsBy f cs
 
 type family Dups (as :: [a]) :: [a] where
   Dups as = DupsBy EqSym0 as
@@ -1421,15 +1416,15 @@ scanl''' f b' as = foldr (\a k b -> b : k (f b a)) (:[]) as b'
 type family Scanl (f :: k1 ~> k ~> k1) (b :: k1) (as :: [k]) :: [k1] where
   Scanl f b as =
       b &
-      (Foldr
+      Foldr
          (Curry3Sym1
              (UnCurrySym1 ConsSym0 :.: AmpSym2 Tuple33'
                   (UnCurrySym1 Id :.: AmpSym2 Tuple23'   -- k
-                      (UnCurrySym1 f :.: (AmpSym2 Tuple33' Tuple13'))  -- f b a
+                      (UnCurrySym1 f :.: AmpSym2 Tuple33' Tuple13')  -- f b a
                   )
               )
          )
-         SingSym0 as)   -- (:[]) == SingSym0 == FlipSym2 ConsSym0 '[]
+         SingSym0 as   -- (:[]) == SingSym0 == FlipSym2 ConsSym0 '[]
 
 -- needed me to give the whole thing a return kind ie k else ghc complains   (d :: k)
 type family Curry3Sym1 (f :: ((a, b), c) ~> d) :: (a ~> (b ~> (c ~> (d :: k)))) where
@@ -1506,7 +1501,7 @@ type instance Apply ReverseSym0 x = Reverse x
 type family TakeWhile' p xs where
   TakeWhile' p xs =
      '[] & Foldr (Curry3Sym1 (WhenSym3 (p :.: Tuple13')   -- ((a, k), x)
-                    (UnCurrySym1 ConsSym0 :.: (AmpSym2 Tuple13' (UnCurrySym1 Id :.: AmpSym2 Tuple23' Tuple33')))  -- a : k x
+                    (UnCurrySym1 ConsSym0 :.: AmpSym2 Tuple13' (UnCurrySym1 Id :.: AmpSym2 Tuple23' Tuple33'))  -- a : k x
                     (KSym1 '[])))
            Id xs
 

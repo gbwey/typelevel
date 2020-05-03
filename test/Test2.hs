@@ -7,17 +7,12 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveFunctor #-}
 module Test2 where
 import GHC.TypeNats
 import PCombinators
@@ -52,7 +47,7 @@ t151 :: (
       ,View T_2Sym0 '(123,'True) ~ 'True
       ,View (T_2Sym0 :.: T_1Sym0) '("ss",'(123,'True)) ~ 123
       ,View (T_2Sym0 :.: T_2Sym0) '("ss",'(123,'True)) ~ 'True
-      ,View (T_1Sym0 :.: T_2Sym0) '( '("ss", ('Left 1 :: Either Nat ())), '(123,'True)) ~ 'Left 1
+      ,View (T_1Sym0 :.: T_2Sym0) '( '("ss", 'Left 1 :: Either Nat ()), '(123,'True)) ~ 'Left 1
       ,View (T_1Sym0 :.: T_2Sym0) '( '("ss", 'Left 1), '(123,'True)) ~ 'Left 1
       ,View (T_1Sym0 :.: T_2Sym0) '( '("ss", 99), '(123,'True)) ~ 99
       ,Update T_2Sym0 NotSym0 '(123,'True) ~ '(123, 'False)
@@ -69,8 +64,8 @@ t151 x = x
 
 t152 :: (
            (
-             ((FlipSym2 (FlipSym2 (TyCon3Sym1 '(,,)) 10) 'False) @@ "x") ~ '("x",10,'False)
-             ,((FlipSym2 (FlipSym2 (TyCon3Sym1 '(,,)) 'True) "x") @@ 1) ~ '(1, 'True, "x")
+             (FlipSym2 (FlipSym2 (TyCon3Sym1 '(,,)) 10) 'False @@ "x") ~ '("x",10,'False)
+             ,(FlipSym2 (FlipSym2 (TyCon3Sym1 '(,,)) 'True) "x" @@ 1) ~ '(1, 'True, "x")
              ,(FlipSym2 (TyCon2Sym1 '(:|)) '[1,2,4] <$> 'Identity 44) ~ 'Identity (44 ':| '[1,2,4])
             ) => ()) -> ()
 t152 x = x
@@ -164,8 +159,8 @@ t154 :: ((
          ,TakeWhile (FlipSym2 LTSym0 6) '[2,5,3,1,6,7] ~ '[2, 5, 3, 1]
          ,DropWhile (FlipSym2 LTSym0 6) '[2,5,3,1,6,7] ~ '[6,7]
          ,Sequence ('Right '[1,2,3]) ~  '[ 'Right 1, 'Right 2, 'Right 3 ]
-         ,Sequence ('[ 'Right 1, 'Right 2, 'Right 3 ]) ~  'Right '[1,2,3]
-         ,Sequence ('[ 'Right 1, 'Right 2, 'Left "Asfd"]) ~  'Left "Asfd"
+         ,Sequence '[ 'Right 1, 'Right 2, 'Right 3 ] ~  'Right '[1,2,3]
+         ,Sequence '[ 'Right 1, 'Right 2, 'Left "Asfd"] ~  'Left "Asfd"
          ,Transpose '[ '[1,2,3], '[4,5,6] ] ~ '[ '[1, 4], '[2, 5], '[3, 6] ]
      ) => ()) -> ()
 t154 x = x
@@ -334,8 +329,8 @@ ts5 :: ((
      ,FizzBuzz 14 ~ "14"
      ,FizzBuzz 2 ~ "2"
      ,(FizzBuzzSym0 <$> EnumFromTo 0 10) ~ '["FizzBuzz", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz"]
-     ,AllF (IsPrefixOfSym1 '["F","i","z","z"] :.: SListSym0) (FizzBuzzSym0 <$> (EnumFromThenTo 0 3 20)) ~ 'True
-     ,AllF (IsSuffixOfSym1 '["B","u","z","z"] :.: SListSym0) (FizzBuzzSym0 <$> (EnumFromThenTo 0 5 20)) ~ 'True
+     ,AllF (IsPrefixOfSym1 '["F","i","z","z"] :.: SListSym0) (FizzBuzzSym0 <$> EnumFromThenTo 0 3 20) ~ 'True
+     ,AllF (IsSuffixOfSym1 '["B","u","z","z"] :.: SListSym0) (FizzBuzzSym0 <$> EnumFromThenTo 0 5 20) ~ 'True
      ,IsSuffixOf (S.ToList "cde") (S.ToList "abcde") ~ 'True
      ,IsSuffixOf (S.ToList "cde") (S.ToList "cdecd") ~ 'False
      ,IsPrefixOf (S.ToList "cde") (S.ToList "cdef") ~ 'True
@@ -345,7 +340,7 @@ ts5 :: ((
      ,On IsSuffixOfSym0 SListSym0 "xy" "cdxy" ~ 'True
      ,On IsSuffixOfSym0 SListSym0 "xy" "xy" ~ 'True
      ,On IsSuffixOfSym0 SListSym0 "cd" "cdxy" ~ 'False
-     ,AllF (EqSym1 "FizzBuzz") (FizzBuzzSym0 <$> (EnumFromThenTo 0 15 50)) ~ 'True
+     ,AllF (EqSym1 "FizzBuzz") (FizzBuzzSym0 <$> EnumFromThenTo 0 15 50) ~ 'True
      ,NatToString 123456 ~ "123456"
      ,NatToString 0 ~ "0"
      ) => ()) -> ()
@@ -397,12 +392,12 @@ ts9 :: ((
 ts9 () = ()
 
 ts10 :: ((
-            ConstraintCartesian '[Show,Read] '[Int,Double] ~ (Show Int, (Show Double, (Read Int, (Read Double, (() :: Constraint)))))
+            ConstraintCartesian '[Show,Read] '[Int,Double] ~ (Show Int, (Show Double, (Read Int, (Read Double, () :: Constraint))))
 --           ,DollarSym0 @@ Show @@ Int ~ Show Int
 --           ,DollarSym1 Show @@ Int ~ Show Int
            ,TyCon1Sym0 @@ Show @@ Int ~ Show Int
            ,TyCon1Sym1 Show @@ Int ~ Show Int
-           ,Mconcat (TyCon1Sym0 <$> '[Show,Read] <*> '[Int,Double]) ~ (Show Int, (Show Double, (Read Int, (Read Double, (() :: Constraint)))))
+           ,Mconcat (TyCon1Sym0 <$> '[Show,Read] <*> '[Int,Double]) ~ (Show Int, (Show Double, (Read Int, (Read Double, () :: Constraint))))
        ) => ()) -> ()
 ts10 () = ()
 
@@ -453,15 +448,15 @@ gg a b = (show a,show b)
 -}
 
 {-
->:kind! ConstraintCartesian '[Show] '[Int] == (Show Int, (() :: Constraint))
-ConstraintCartesian '[Show] '[Int] == (Show Int, (() :: Constraint)) :: Bool
+>:kind! ConstraintCartesian '[Show] '[Int] == (Show Int, () :: Constraint)
+ConstraintCartesian '[Show] '[Int] == (Show Int, () :: Constraint) :: Bool
 = 'True
 
->:kind! ConstraintCartesian '[Show,Read] '[Int] == (Show Int, (Read Int, (() :: Constraint)))
-ConstraintCartesian '[Show,Read] '[Int] == (Show Int, (Read Int, (() :: Constraint))) :: Bool
+>:kind! ConstraintCartesian '[Show,Read] '[Int] == (Show Int, (Read Int, () :: Constraint))
+ConstraintCartesian '[Show,Read] '[Int] == (Show Int, (Read Int, () :: Constraint)) :: Bool
 = 'True
 
->:kind! ConstraintCartesian '[Show,Read] '[Int,Double] == (Show Int, (Show Double, (Read Int, (Read Double, (() :: Constraint)))))
-ConstraintCartesian '[Show,Read] '[Int,Double] == (Show Int, (Show Double, (Read Int, (Read Double, (() :: Constraint))))) :: Bool
+>:kind! ConstraintCartesian '[Show,Read] '[Int,Double] == (Show Int, (Show Double, (Read Int, (Read Double, () :: Constraint))))
+ConstraintCartesian '[Show,Read] '[Int,Double] == (Show Int, (Show Double, (Read Int, (Read Double, () :: Constraint)))) :: Bool
 = 'True
 -}

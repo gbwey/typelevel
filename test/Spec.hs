@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings, DataKinds, TypeOperators, TypeApplications #-}
 module Main where
-import Data.Proxy
 import PCombinators
 import Data.Functor.Identity
 import GHC.TypeNats
