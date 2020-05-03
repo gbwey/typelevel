@@ -204,7 +204,7 @@ t1251 :: ((
     ) => ()) -> ()
 t1251 x = x
 
-t1252 :: (SuccSym0 <$> 'Compose ('Just '[2,3,4]) ~ 'Compose ('Just '[3,4,5]) => ()) -> ()
+t1252 :: ((SuccSym0 <$> 'Compose ('Just '[2,3,4])) ~ 'Compose ('Just '[3,4,5]) => ()) -> ()
 t1252 x = x
 
 t1253 :: (Sequence ('Just '[2,3,4]) ~ '[ 'Just 2, 'Just 3, 'Just 4] => ()) -> ()
@@ -259,7 +259,7 @@ t146 :: ((
        ,SecondSym0 @@ SuccSym0 @@ '("sadf",1) ~ '("sadf", 2)
        ,SecondSym1 SuccSym0 @@ '("sadf",1) ~ '("sadf", 2)
        ,Join '("ss", '("tt",33)) ~ '("sstt", 33)
-       ,UnR ('R (KSym1 ('R SuccSym0))) >>= Id @@ 123 ~ 124
+       ,UnR (('R (KSym1 ('R SuccSym0))) >>= Id) @@ 123 ~ 124
        ,UnR (Join ('R (KSym1 ('R SuccSym0)))) @@ 12 ~ 13
        ,('SG.Arg 4 "b" `Compare` 'SG.Arg 4 "a") ~ 'EQ
        ,('SG.Arg 4 "z" `Compare` 'SG.Arg 5 "a") ~ 'LT
