@@ -259,7 +259,7 @@ t146 :: ((
        ,SecondSym0 @@ SuccSym0 @@ '("sadf",1) ~ '("sadf", 2)
        ,SecondSym1 SuccSym0 @@ '("sadf",1) ~ '("sadf", 2)
        ,Join '("ss", '("tt",33)) ~ '("sstt", 33)
-       ,UnR (('R (KSym1 ('R SuccSym0))) >>= Id) @@ 123 ~ 124
+       ,UnR ('R (KSym1 ('R SuccSym0)) >>= Id) @@ 123 ~ 124
        ,UnR (Join ('R (KSym1 ('R SuccSym0)))) @@ 12 ~ 13
        ,('SG.Arg 4 "b" `Compare` 'SG.Arg 4 "a") ~ 'EQ
        ,('SG.Arg 4 "z" `Compare` 'SG.Arg 5 "a") ~ 'LT

@@ -22,8 +22,12 @@ dependencies:
 
 library:
   source-dirs: src
-  ghc-options:
-  - -fomit-interface-pragmas
+  ghc-options: []
+  when:
+     condition: impl(ghc >= 8.8)
+     ghc-options:
+     - -fwrite-ide-info
+     - -hiedir=.hie
 
 tests:
   typelevel-test:
@@ -34,6 +38,11 @@ tests:
     - -fomit-interface-pragmas
     - -rtsopts
     - -with-rtsopts=-N
+    when:
+       condition: impl(ghc >= 8.8)
+       ghc-options:
+       - -fwrite-ide-info
+       - -hiedir=.hie
     dependencies:
     - typelevel
     - tasty

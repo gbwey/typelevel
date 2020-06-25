@@ -1,6 +1,6 @@
 -- Vec is an inductive defined vector that can be work in multiple dimensions
 {-# OPTIONS -Wall #-}
-{-# OPTIONS -Wcompat #-}
+{-# OPTIONS -Wno-compat #-}
 {-# OPTIONS -Wincomplete-record-updates #-}
 {-# OPTIONS -Wno-incomplete-uni-patterns #-}
 {-# OPTIONS -Wno-redundant-constraints #-}
@@ -44,6 +44,36 @@ import PTraversable
 import PEq
 import PFoldable
 import PN
+{-
+src\VectorN.hs:33:8: warning: [-Wcompat-unqualified-imports]
+    To ensure compatibility with future core libraries changes
+    imports to Data.List should be
+    either qualified or have an explicit import list.
+   |
+33 | import Data.List
+   |        ^^^^^^^^^
+
+src\VectorN.hs:82:3: warning: [-Woverlapping-patterns]
+    Pattern match has inaccessible right hand side
+    In an equation for ‘<>’: <> VZ VZ = ...
+   |
+82 |   VZ <> VZ = VZ
+   |   ^^^^^^^^^^^^^
+
+src\VectorN.hs:94:3: warning: [-Woverlapping-patterns]
+    Pattern match has inaccessible right hand side
+    In an equation for ‘<*>’: <*> VZ VZ = ...
+   |
+94 |   VZ <*> VZ = VZ
+   |   ^^^^^^^^^^^^^^
+
+src\VectorN.hs:159:1: warning: [-Woverlapping-patterns]
+    Pattern match has inaccessible right hand side
+    In an equation for ‘vzip’: vzip _ VZ VZ = ...
+    |
+159 | vzip _ VZ VZ = VZ
+    | ^^^^^^^^^^^^^^^^^
+-}
 
 -- we want stuff to evaluate so use type family not type synonyms
 type family Vec' (n :: Nat) a where

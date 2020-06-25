@@ -117,7 +117,7 @@ instance Choice RR where
 --type family PPrism :: (b -> t) -> (s -> Either t a) -> Prism s t a b
 --prism bt seta = dimap seta (either pure (fmap bt)) . right'
 
-data MarketP a b s t = MarketP (b ~> t) (s ~> Either t a)
+data MarketP a b s t = MarketP !(b ~> t) !(s ~> Either t a)
 
 instance PFunctor (MarketP a b s) where
   type Fmap f ('MarketP bt slr) = 'MarketP (f :.: bt) (BifirstSym1 f :.: slr )

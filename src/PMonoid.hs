@@ -40,7 +40,7 @@ class PSemigroup a => PMonoid a where
   type Mconcat xs = Foldr SAppSym0 Mempty xs
 
 instance PMonoid Constraint where
-  type Mempty = ()
+  type Mempty = (() :: Constraint)
 
 {-
 >:kind! Mconcat '[KnownNat 4, KnownNat 5]

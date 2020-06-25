@@ -64,10 +64,22 @@ class PSemigroup (a :: Type) where
   type family SUnWrap (arg :: a) :: k1
 --  type SUnWrap a = a  -- cant use this as a default cos we are now saying that a == b
 
+{- ghc 8.10.1
+src\PSemigroup.hs:70:3: error:
+    • Type indexes must match class instance head
+      Expected: (<>) @Constraint _ _
+        Actual: (<>) @* c c1
+    • In the type instance declaration for ‘<>’
+      In the instance declaration for ‘PSemigroup Constraint’
+   |
+70 |   type c <> c1 = (c, c1)
+   |   ^^^^^^^^^^^^^^^^^^^^^^
+-}
+
 -- type family == type within class instance
 -- ok this is seriously cool!
 instance PSemigroup Constraint where
-  type c <> c1 = (c, c1)
+  type (c :: Constraint) <> (c1 :: Constraint) = ((c, c1) :: Constraint)
   type SUnWrap me = me
 
 {-

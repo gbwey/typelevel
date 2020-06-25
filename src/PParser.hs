@@ -337,7 +337,7 @@ instance PEnum Int' where
 
 
 
-data Double' = Double' { dPositive :: Bool,  dIntegral :: Nat, dFractional :: Nat }
+data Double' = Double' { dPositive :: !Bool,  dIntegral :: !Nat, dFractional :: !Nat }
 
 data Double'Sym0 :: Bool ~> Nat ~> Nat ~> Double'
 type instance Apply Double'Sym0 x = Double'Sym1 x
@@ -349,7 +349,7 @@ data Double'Sym2 :: Bool -> Nat -> Nat ~> Double'
 type instance Apply (Double'Sym2 x y) z = 'Double' x y z
 
 
-data Int' = Int' { iPositive :: Bool,  iInt :: Nat }
+data Int' = Int' { iPositive :: !Bool,  iInt :: !Nat }
 
 data Int'Sym0 :: Bool ~> Nat ~> Int'
 type instance Apply Int'Sym0 x = Int'Sym1 x
@@ -360,7 +360,7 @@ type instance Apply (Int'Sym1 x) y = 'Int' x y
 
 
 
-data IP = IP Nat Nat Nat Nat
+data IP = IP !Nat !Nat !Nat !Nat
 
 data IPSym0 :: Nat ~> Nat ~> Nat ~> Nat ~> IP
 type instance Apply IPSym0 x = IPSym1 x
