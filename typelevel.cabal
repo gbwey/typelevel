@@ -4,13 +4,13 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5d7e426306fa59437d753ee71d892e673d6aedf75d56cd6f80b4bc60ea4bce95
+-- hash: 49d3512cf5a2540f3ecb1f3ff743cf2850c4e2f43911a82e1f9717dc7e72760b
 
 name:           typelevel
 version:        0.1.0.0
 description:    Please see the README on GitHub at <https://github.com/gbwey/typelevel#readme>
 author:         gbwey
-maintainer:     gbwey9@gmail.com
+maintainer:     gbwey
 copyright:      2019 Grant Weyburne
 license:        BSD3
 license-file:   LICENSE
