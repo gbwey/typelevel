@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -98,12 +97,12 @@ data UniqueImplSym1 :: [a] -> a ~> [a]
 type instance Apply (UniqueImplSym1 xs) x = xs `SnocSym2` UniqueImpl 1 x "" xs
 
 type family UniqueImpl (n :: Nat) (x :: Symbol) (suffix :: Symbol) (xs :: [Symbol]) :: Symbol where
-  UniqueImpl 11 x suffix xs = TypeError ('Text "UniqueImpl: only max of 10 duplicates allowed") -- only need it so the FindAt' doesnt fail
+  UniqueImpl 11 _ _ _ = TypeError ('Text "UniqueImpl: only max of 10 duplicates allowed") -- only need it so the FindAt' doesnt fail
   UniqueImpl n x suffix xs = UniqueImpl_ (ElemList (x <> suffix) xs) n x suffix xs
 
 type family UniqueImpl_ b n x suffix xs where
-  UniqueImpl_ 'True n x suffix xs = UniqueImpl (n+1) x ("_" <> FindAt' n CharSetDigit) xs
-  UniqueImpl_ 'False n x suffix xs = x <> suffix
+  UniqueImpl_ 'True n x _ xs = UniqueImpl (n+1) x ("_" <> FindAt' n CharSetDigit) xs
+  UniqueImpl_ 'False _ x suffix _ = x <> suffix
 
 
 
@@ -117,6 +116,6 @@ data UniquePairImplSym1 :: [(Symbol, k)] -> (Symbol, k) ~> [(Symbol, k)]
 type instance Apply (UniquePairImplSym1 xs) x = xs `SnocSym2` UniquePairImpl 1 x "" (Map FstSym0 xs)
 
 type family UniquePairImpl (n :: Nat) (x :: (Symbol, k)) (suffix :: Symbol) (xs :: [Symbol]) :: (Symbol, k) where
-  UniquePairImpl 11 x suffix xs = TypeError ('Text "UniquePairImpl: only max of 10 duplicates allowed") -- only need it so the FindAt' doesnt fail
+  UniquePairImpl 11 _ _ _ = TypeError ('Text "UniquePairImpl: only max of 10 duplicates allowed") -- only need it so the FindAt' doesnt fail
   UniquePairImpl n '(x,t) suffix xs = '(UniqueImpl_ (ElemList (x <> suffix) xs) n x suffix xs, t)
 

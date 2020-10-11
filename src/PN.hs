@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -80,7 +79,7 @@ type family m :+ n where
   'S a :+ b = 'S (a :+ b)
 
 type family m :* n where
-  'Z :* a = 'Z
+  'Z :* _ = 'Z
   'S a :* b = b :+ (a :* b) -- had to swap from (a ** b) ++ b to get vflat working
 
 data Fin n where

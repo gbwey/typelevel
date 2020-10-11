@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -57,22 +56,22 @@ data BisecondSym1 :: (c ~> d) -> bi x c ~> bi x d
 type instance Apply (BisecondSym1 x) y = Bisecond x y
 
 instance PBifunctor These where
-  type Bimap f g ('This a) = 'This (f @@ a)
-  type Bimap f g ('That b) = 'That (g @@ b)
+  type Bimap f _ ('This a) = 'This (f @@ a)
+  type Bimap _ g ('That b) = 'That (g @@ b)
   type Bimap f g ('These a b) = 'These (f @@ a) (g @@ b)
 
 instance PBifunctor Either where
-  type Bimap f g ('Left a) = 'Left (f @@ a)
-  type Bimap f g ('Right b) = 'Right (g @@ b)
+  type Bimap f _ ('Left a) = 'Left (f @@ a)
+  type Bimap _ g ('Right b) = 'Right (g @@ b)
 
 instance PBifunctor (,) where
   type Bimap f g '(a, b) = '(f @@ a, g @@ b)
 
 instance PBifunctor Const where
-  type Bimap f g ('Const e) = 'Const (f @@ e)
+  type Bimap f _ ('Const e) = 'Const (f @@ e)
 
 instance PBifunctor Tagged where
-  type Bimap f g ('Tagged b) = 'Tagged (g @@ b)
+  type Bimap _ g ('Tagged b) = 'Tagged (g @@ b)
 
 data Proxy2 (a :: k) (b :: k1) = Proxy2 deriving Show
 instance Bifunctor Proxy2 where

@@ -1,6 +1,5 @@
 -- for safety just use DTE.== cos has the best coverage
 -- PEq ie == has too many gaps but is useful for POrd
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -55,7 +54,7 @@ class PEq (a :: Type) where
 -- for @singletons@' purposes, so we use it instead of '(DTE.==)'.
 type family DefaultEq (a :: k) (b :: k) :: Bool where
   DefaultEq a a = 'True
-  DefaultEq a b = 'False
+  DefaultEq _ _ = 'False
 
 -- this == not EQ!
 data PEqSym0 :: k ~> k ~> Bool
@@ -73,7 +72,7 @@ type instance Apply (PNeSym1 x) y = x /== y
 
 -- special case only looks at first arg for equality
 instance PEq (SG.Arg x y) where
-  type 'SG.Arg a b === 'SG.Arg a1 b1 = a === a1
+  type 'SG.Arg a _ === 'SG.Arg a1 _ = a === a1
 
 instance PEq Nat
 instance PEq Ordering
@@ -92,14 +91,14 @@ instance PEq z => PEq (Down z) where
 
 instance PEq a => PEq (Maybe a) where
   type 'Just x === 'Just y = x === y
-  type 'Just x === 'Nothing = 'False
-  type 'Nothing === 'Just y = 'False
+  type 'Just _ === 'Nothing = 'False
+  type 'Nothing === 'Just _ = 'False
   type 'Nothing === 'Nothing = 'True
 
 instance (PEq a, PEq b) => PEq (Either a b) where
   type 'Right x === 'Right y = x === y
-  type 'Right x === 'Left y = 'False
-  type 'Left x === 'Right y = 'False
+  type 'Right _ === 'Left _ = 'False
+  type 'Left _ === 'Right _ = 'False
   type 'Left x === 'Left y = x === y
 
 instance PEq Symbol where
@@ -111,8 +110,8 @@ instance PEq (Proxy a) where
 instance PEq x => PEq [x] where
   type '[] === '[] = 'True
   type (a ': as) === (b ': bs) = a === b && as === bs
-  type '[] === (b ': bs) = 'False
-  type (a ': as) === '[] = 'False
+  type '[] === (_ ': _) = 'False
+  type (_ ': _) === '[] = 'False
 
 instance PEq z => PEq (ZipList z) where
   type 'ZipList as === 'ZipList bs = as === bs
@@ -122,15 +121,15 @@ instance PEq z => PEq (NonEmpty z) where
 
 instance (PEq x, PEq y) => PEq (These x y) where
   type 'This a === 'This b = a === b
-  type 'This a === 'That b = 'False
-  type 'This a === 'These a1 b1 = 'False
+  type 'This _ === 'That _ = 'False
+  type 'This _ === 'These _ _ = 'False
 
-  type 'That a === 'This b = 'False
+  type 'That _ === 'This _ = 'False
   type 'That a === 'That b = a === b
-  type 'That a === 'These a1 b1 = 'False
+  type 'That _ === 'These _ _ = 'False
 
-  type 'These a b === 'This a1 = 'False
-  type 'These a b === 'That b1 = 'False
+  type 'These _ _ === 'This _ = 'False
+  type 'These _ _ === 'That _ = 'False
   type 'These a b === 'These a1 b1 = a === a1 && b === b1
 
 

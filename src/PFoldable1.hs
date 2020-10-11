@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -41,7 +40,7 @@ type instance Apply (FoldMap1Sym1 x) y = FoldMap1 x y
 
 
 instance PFoldable1 ((,) z) where
-  type FoldMap1 f '(e,a) = f @@ a
+  type FoldMap1 f '(_,a) = f @@ a
 
 -- dont call FoldMap cos uses Mempty which is not defined for Foldable1 cos is semigroup
 instance PFoldable1 NonEmpty where

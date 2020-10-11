@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -21,7 +20,7 @@ import GHC.TypeNats
 import GHC.TypeLits hiding (natVal,natVal')
 
 type family InsertWithKey (f :: k ~> a ~> a ~> a) (x :: k) (y :: a) (kvs :: [(k, a)]) :: [(k, a)] where
-  InsertWithKey f k a '[] = '[ '(k, a) ]
+  InsertWithKey _ k a '[] = '[ '(k, a) ]
   InsertWithKey f k a ( '(k1, a1) ': kvs ) = If (k==k1) ('(k, f @@ k @@ a @@ a1) ': kvs) ('(k1, a1) ': InsertWithKey f k a kvs)
 
 type family InsertWith (f :: a ~> a ~> a) (x :: k) (y :: a) (kvs :: [(k, a)]) :: [(k, a)] where
@@ -31,7 +30,7 @@ type family Insert (x :: k) (y :: a) (kvs :: [(k, a)]) :: [(k, a)] where
   Insert k a kvs = InsertWithKey (KSym1 (KSym1 (KSym1 a))) k a kvs
 
 type family Lookup (x :: k) (kvs :: [(k, a)]) :: Maybe a where
-  Lookup k '[] = 'Nothing
+  Lookup _ '[] = 'Nothing
   Lookup k ('(k1,a) : kvs) = If (k==k1) ('Just a) (Lookup k kvs)
 
 type family Delete (x :: k) (kvs :: [(k, a)]) :: [(k, a)] where
@@ -52,7 +51,7 @@ type family Singleton (x :: k) (y :: a) :: [(k, a)] where
   Singleton k a = '[ '(k, a) ]
 
 type family UpdateWithKeys (f :: k ~> a ~> Maybe a) (x :: k) (kvs :: [(k, a)]) :: [(k, a)] where
-  UpdateWithKeys f k '[] = '[]
+  UpdateWithKeys _ _ '[] = '[]
   UpdateWithKeys f k ( '(k1,a) ': kvs) =
      If (k==k1)
          ( '(k1,a) ': UpdateWithKeys f k kvs)
@@ -63,7 +62,7 @@ type family UpdateWith (f :: a ~> Maybe a) (x :: k) (kvs :: [(k, a)]) :: [(k, a)
 
 -- quadratic! cos Eq not Ord
 type family UnionWith (f :: a ~> a ~> a) (m1 :: [(k, a)]) (m2 :: [(k, a)]) :: [(k, a)] where
-  UnionWith f '[] m2 = m2
+  UnionWith _ '[] m2 = m2
   UnionWith f ('(k, a) ': kvs) m2 =
      Maybe'
        ('(k, a) ': UnionWith f kvs m2)
@@ -88,7 +87,7 @@ type family UnionsWith (f :: a ~> a ~> a) (ms :: [[(k, a)]]) :: [(k, a)] where
 
 
 type family FilterWithKey (f :: k ~> a ~> Bool) (m :: [(k, a)]) :: [(k, a)] where
-  FilterWithKey f '[] = '[]
+  FilterWithKey _ '[] = '[]
   FilterWithKey f ('(k, a) ': kvs) =
      If
         (f @@ k @@ a)
@@ -102,16 +101,16 @@ type family MergeSort (as :: [k]) where
   MergeSort as = MergeSortOn LESym0 as
 -- Lessthanorequalto function (stable sort if you use <=)
 type family MergeSortOn' (f :: a ~> a ~> Bool) (as :: [a]) (bs :: [a]) :: [a] where
-  MergeSortOn' f '[] bs = bs
-  MergeSortOn' f as '[] = as
+  MergeSortOn' _ '[] bs = bs
+  MergeSortOn' _ as '[] = as
   MergeSortOn' f (a ': as) (b ': bs) =
      If (f @@ a @@ b)
         (a ': MergeSortOn' f as (b ': bs))
         (b ': MergeSortOn' f (a ': as) bs)
 
 type family MergeSortOn (f :: a ~> a ~> Bool) (as :: [a]) :: [a] where
-  MergeSortOn f '[] = '[]
-  MergeSortOn f '[a] = '[a]
+  MergeSortOn _ '[] = '[]
+  MergeSortOn _ '[a] = '[a]
   MergeSortOn f (a ': a1 ': as) = MergeSortOn'' f (SplitAt (Div (Len as+2) 2) (a ': a1 ': as))
 
 type family MergeSortOn'' (f :: a ~> a ~> Bool) (tps :: ([a], [a])) :: [a] where
@@ -121,5 +120,5 @@ type family QuickSort as where
   QuickSort as = QuickSortOn LESym0 as
 
 type family QuickSortOn f as where
-  QuickSortOn f '[] = '[]
+  QuickSortOn _ '[] = '[]
   QuickSortOn f (a ': as) = QuickSortOn f (Filter (NotSym0 :.: (f @@ a)) as) ++ '[a] ++ QuickSortOn f (Filter (f @@ a) as)

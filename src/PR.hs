@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -27,7 +26,7 @@ import Data.Kind (Type)
 newtype R e a = R { unR :: e ~> a }
 
 -- needed for functorwithindex
-type instance FWI (R e a) = e
+type instance FWI (R e _) = e
 
 -- need a applyable function to unwrap R
 data UnRSym0 :: R e a ~> e ~> a
@@ -81,7 +80,7 @@ instance PFunctorWithIndex (R (e :: Type)) where
 
 -- coercion worked from (e,a) to FWI (R e a)
 data ToFWIR :: (e,a) ~> FWI (R e a)
-type instance Apply ToFWIR '(e,a) = e
+type instance Apply ToFWIR '(e,_) = e
 
 
 

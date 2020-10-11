@@ -1,8 +1,3 @@
-{-# OPTIONS -Wall #-}
-{-# OPTIONS -Wcompat #-}
-{-# OPTIONS -Wincomplete-record-updates #-}
-{-# OPTIONS -Wincomplete-uni-patterns #-}
-{-# OPTIONS -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -49,10 +44,10 @@ type instance Apply (ContramapSym1 x) y = Contramap x y
 
 
 instance PContravariant Proxy where
-  type Contramap f 'Proxy = 'Proxy
+  type Contramap _ 'Proxy = 'Proxy
 
 instance PContravariant (Const z) where
-  type Contramap f ('Const e) = 'Const e
+  type Contramap _ ('Const e) = 'Const e
 
 
 instance (PContravariant g, PContravariant h) => PContravariant (Compose g h) where

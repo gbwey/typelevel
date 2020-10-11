@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -66,11 +65,11 @@ class PSemigroup (a :: Type) where
 
 {- ghc 8.10.1
 src\PSemigroup.hs:70:3: error:
-    • Type indexes must match class instance head
+    ï¿½ Type indexes must match class instance head
       Expected: (<>) @Constraint _ _
         Actual: (<>) @* c c1
-    • In the type instance declaration for ‘<>’
-      In the instance declaration for ‘PSemigroup Constraint’
+    ï¿½ In the type instance declaration for ï¿½<>ï¿½
+      In the instance declaration for ï¿½PSemigroup Constraintï¿½
    |
 70 |   type c <> c1 = (c, c1)
    |   ^^^^^^^^^^^^^^^^^^^^^^
@@ -138,19 +137,19 @@ instance PSemigroup a => PSemigroup (Maybe a) where
   type SUnWrap ('Just x) = 'Just (SUnWrap x)
 
 instance PSemigroup (SG.First a) where
-  type x <> y = x
+  type x <> _ = x
   type SUnWrap ('SG.First x) = x
 
 -- remember the semigroup and monoid types for First and Last are different
 -- ie Monoid has Maybe inside
 instance PSemigroup (MM.First a) where
   type 'MM.First 'Nothing <> y = y
-  type 'MM.First ('Just x) <> y = 'MM.First ('Just x)
+  type 'MM.First ('Just x) <> _ = 'MM.First ('Just x)
   type SUnWrap ('MM.First x) = x
 
 
 instance PSemigroup (SG.Last a) where
-  type x <> y = y
+  type _ <> y = y
   type SUnWrap ('SG.Last x) = x
 
 -- remember the semigroup and monoid types for Last and Last are different
@@ -158,7 +157,7 @@ instance PSemigroup (SG.Last a) where
 -- remember First is sticky and Last always wants to change
 instance PSemigroup (MM.Last a) where
   type 'MM.Last 'Nothing <> y = y
-  type x <> 'MM.Last ('Just y) = 'MM.Last ('Just y)
+  type _ <> 'MM.Last ('Just y) = 'MM.Last ('Just y)
   type x <> 'MM.Last 'Nothing = x
   type SUnWrap ('MM.Last x) = x
 
@@ -167,8 +166,8 @@ instance PSemigroup (MM.Last a) where
 -- cant have overlaps hence it is explicit
 instance PSemigroup Ordering where
   type 'EQ <> y = y
-  type 'LT <> y = 'LT
-  type 'GT <> y = 'GT
+  type 'LT <> _ = 'LT
+  type 'GT <> _ = 'GT
   type SUnWrap me = me
 
 -- Max has lower bound of 0 cos Natural numbers
@@ -250,7 +249,7 @@ instance PSemigroup (NonEmpty a) where
 instance PSemigroup SG.All where
 --  type 'SG.All x <> 'SG.All y = 'SG.All (x && y)
   type 'SG.All 'True <> x = x
-  type 'SG.All 'False <> x = 'SG.All 'False
+  type 'SG.All 'False <> _ = 'SG.All 'False
   type SUnWrap ('SG.All x) = x
 
 
@@ -258,7 +257,7 @@ instance PSemigroup SG.All where
 instance PSemigroup SG.Any where
 --  type 'SG.Any x <> 'SG.Any y = 'SG.Any (x || y)
   type 'SG.Any 'False <> x = x
-  type 'SG.Any 'True <> x = 'SG.Any 'True
+  type 'SG.Any 'True <> _ = 'SG.Any 'True
   type SUnWrap ('SG.Any x) = x
 
 
@@ -314,7 +313,7 @@ type instance Apply SAnySym0 x = 'SG.Any x
 -- AGAIN make sure you dont use x y else you get weird errors: use a a1 b etc [ie dont use vars from the instance head]
 -- no monoid instance for These and ZipList
 instance (PSemigroup x, PSemigroup y) => PSemigroup (These x y) where
-  type 'This a <> 'This a1 = 'This a
+  type 'This a <> 'This _ = 'This a
   type 'This a <> 'That b = 'These a b
   type 'This a <> 'These a1 b = 'These (a <> a1) b
 
@@ -331,10 +330,10 @@ instance (PSemigroup x, PSemigroup y) => PSemigroup (These x y) where
   type SUnWrap ('These a b) = 'These (SUnWrap a) (SUnWrap b)
 
 instance PSemigroup (Either x y) where
-  type 'Left a <> 'Left a1 = 'Left a1
-  type 'Left a <> 'Right b = 'Right b
-  type 'Right b <> 'Left a1 = 'Right b
-  type 'Right a <> 'Right a1 = 'Right a1
+  type 'Left _ <> 'Left a1 = 'Left a1
+  type 'Left _ <> 'Right b = 'Right b
+  type 'Right b <> 'Left _ = 'Right b
+  type 'Right _ <> 'Right a1 = 'Right a1
   type SUnWrap me = me  -- dont use x or y cos mentioned on the head cos will cause problems
 
 {-
@@ -364,11 +363,11 @@ instance PSemigroup Symbol where
 
 instance PSemigroup Void where
   type x <> x = x
-  type SUnWrap me = '()
+  type SUnWrap _ = '()
 
 instance PSemigroup (Proxy z) where
   type 'Proxy <> 'Proxy = 'Proxy
-  type SUnWrap me = '()
+  type SUnWrap _ = '()
 
 instance PSemigroup s => PSemigroup (Tagged s a) where
   type 'Tagged a1 <> 'Tagged a2 = 'Tagged (a1 <> a2)

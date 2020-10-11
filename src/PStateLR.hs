@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -46,7 +45,7 @@ type instance Apply (STLRAppSym2 sab sa) s = STLRApp (sab @@ s) sa
 
 
 type family STLRApp (lrab :: Either e (a ~> b,s)) (sa :: s ~> Either e (a,s)) :: Either e (b,s) where
-  STLRApp ('Left e) sa = 'Left e
+  STLRApp ('Left e) _ = 'Left e
   STLRApp ('Right '(ab,s)) sa = Bisecond (FirstSym1 ab) (sa @@ s)
 
 instance PMonoid e => PMonad (STLR e s) where
@@ -63,7 +62,7 @@ type instance Apply (STLRBindSym2 sa amb) s = STLRBind (sa @@ s) amb
 
 
 type family STLRBind (lra :: Either e (a,s)) (amb :: a ~> STLR e s b) :: Either e (b,s) where
-  STLRBind ('Left e) amb = 'Left e
+  STLRBind ('Left e) _ = 'Left e
   STLRBind ('Right '(a,s)) amb = UnSTLR (amb @@ a) @@ s
 
 instance PSemigroup a => PSemigroup (STLR e s a) where
@@ -120,6 +119,6 @@ data STLRAltSym2 :: (s ~> Either e (a,s)) -> (s ~> Either e (a,s)) -> s ~> Eithe
 type instance Apply (STLRAltSym2 sa1 sa2) s = STLRAlt (sa1 @@ s) (sa2 @@ s)
 
 type family STLRAlt lr1 lr2 where
-  STLRAlt ('Right x) y = 'Right x
-  STLRAlt x ('Right y) = 'Right y
+  STLRAlt ('Right x) _ = 'Right x
+  STLRAlt _ ('Right y) = 'Right y
   STLRAlt ('Left x) ('Left y) = 'Left (x <> y)

@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -138,19 +137,19 @@ instance POrd Nat where
   type LessThanOrEqual x y = x <=? y
 
 instance POrd Ordering where
-  type LessThanOrEqual 'LT y = 'True
+  type LessThanOrEqual 'LT _ = 'True
   type LessThanOrEqual 'EQ y = Not (y === 'EQ)
   type LessThanOrEqual 'GT y = y === 'GT
 
 instance POrd Bool where
-  type LessThanOrEqual 'False y = 'True
+  type LessThanOrEqual 'False _ = 'True
   type LessThanOrEqual 'True y = y === 'True
 
 instance POrd () where
   type LessThanOrEqual '() '() = 'True
 
 instance POrd Void where
-  type LessThanOrEqual x y = 'True
+  type LessThanOrEqual _ _ = 'True
 
 instance POrd a => POrd (SG.Option a) where
   type LessThanOrEqual ('SG.Option x) ('SG.Option y) = LessThanOrEqual x y
@@ -161,7 +160,7 @@ instance POrd a => POrd (Tagged s a) where
 -- Arg and Down are the exceptions
 -- Ordering only on First arg!
 instance POrd s => POrd (SG.Arg s a) where
-  type LessThanOrEqual ('SG.Arg x y) ('SG.Arg x1 y1) = LessThanOrEqual x x1
+  type LessThanOrEqual ('SG.Arg x _) ('SG.Arg x1 _) = LessThanOrEqual x x1
   -- fixed: uses PEq: need to override else will use equality which is different
 --  type Compare ('SG.Arg x y) ('SG.Arg x1 y1) = Compare x x1
 
@@ -170,15 +169,15 @@ instance POrd z => POrd (Down z) where
   type LessThanOrEqual ('Down a) ('Down a1) = LessThanOrEqual a1 a
 
 instance POrd a => POrd (Maybe a) where
-  type LessThanOrEqual 'Nothing x = 'True
-  type LessThanOrEqual ('Just x) 'Nothing = 'False
+  type LessThanOrEqual 'Nothing _ = 'True
+  type LessThanOrEqual ('Just _) 'Nothing = 'False
   type LessThanOrEqual ('Just x) ('Just y) = LessThanOrEqual x y
 
 instance (POrd a, POrd b) => POrd (Either a b) where
   type LessThanOrEqual ('Left x) ('Left y) = LessThanOrEqual x y
-  type LessThanOrEqual ('Left x) ('Right y) = 'True
+  type LessThanOrEqual ('Left _) ('Right _) = 'True
 
-  type LessThanOrEqual ('Right x) ('Left y) = 'False
+  type LessThanOrEqual ('Right _) ('Left _) = 'False
   type LessThanOrEqual ('Right x) ('Right y) = LessThanOrEqual x y
 
 instance POrd Symbol where
@@ -190,8 +189,8 @@ instance POrd (Proxy a) where
 
 instance POrd x => POrd [x] where
   type LessThanOrEqual '[] '[] = 'True
-  type LessThanOrEqual '[] (a ': as) = 'True
-  type LessThanOrEqual (a ': as) '[] = 'False
+  type LessThanOrEqual '[] (_ ': _) = 'True
+  type LessThanOrEqual (_ ': _) '[] = 'False
   type LessThanOrEqual (a ': as) (b : bs) = If (a === b) (LessThanOrEqual as bs) (LessThanOrEqual a b)
 
 instance POrd z => POrd (ZipList z) where
@@ -202,16 +201,16 @@ instance POrd z => POrd (NonEmpty z) where
 
 instance (POrd x, POrd y) => POrd (These x y) where
   type LessThanOrEqual ('This a) ('This a1) = LessThanOrEqual a a1
-  type LessThanOrEqual ('This a) ('That b) = 'True
-  type LessThanOrEqual ('This a) ('These a1 b1) = 'True
+  type LessThanOrEqual ('This _) ('That _) = 'True
+  type LessThanOrEqual ('This _) ('These _ _) = 'True
 
-  type LessThanOrEqual ('That b) ('This a) = 'False
+  type LessThanOrEqual ('That _) ('This _) = 'False
   type LessThanOrEqual ('That b) ('That b1) = LessThanOrEqual b b1
-  type LessThanOrEqual ('That b) ('These a1 b1) = 'True
+  type LessThanOrEqual ('That _) ('These _ _) = 'True
 
   type LessThanOrEqual ('These a b) ('These a1 b1) = If (a===a1) (LessThanOrEqual b b1) (LessThanOrEqual a a1)
-  type LessThanOrEqual ('These a b) ('This a1) = 'False
-  type LessThanOrEqual ('These a b) ('That b1) = 'False
+  type LessThanOrEqual ('These _ _) ('This _) = 'False
+  type LessThanOrEqual ('These _ _) ('That _) = 'False
 
 -- dont flip: only on semigroup
 instance POrd z => POrd (SG.Dual z) where
@@ -296,9 +295,9 @@ type family WhenCompare (cmp :: a ~> Ordering) (lt :: a ~> b) (eq :: a ~> b) (gt
   WhenCompare f lt eq gt a = WhenCompare' (f @@ a) lt eq gt a
 
 type family WhenCompare' (cmp :: Ordering) (lt :: a ~> b) (eq :: a ~> b) (gt :: a ~> b) (arg :: a) :: b where
-  WhenCompare' 'LT lt eq gt a = lt @@ a
-  WhenCompare' 'EQ lt eq gt a = eq @@ a
-  WhenCompare' 'GT lt eq gt a = gt @@ a
+  WhenCompare' 'LT lt _ _ a = lt @@ a
+  WhenCompare' 'EQ _ eq _ a = eq @@ a
+  WhenCompare' 'GT _ _ gt a = gt @@ a
 
 data WhenCompareSym0 :: (a ~> Ordering) ~> (a ~> b) ~> (a ~> b) ~> (a ~> b) ~> a ~> b
 type instance Apply WhenCompareSym0 x = WhenCompareSym1 x

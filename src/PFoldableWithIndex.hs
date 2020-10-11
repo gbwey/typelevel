@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -49,7 +48,7 @@ instance PFoldableWithIndex Maybe where
   type IfoldMap f x = Maybe' Mempty (f @@ '()) x
 
 instance PFoldableWithIndex Proxy where
-  type IfoldMap f 'Proxy = Mempty
+  type IfoldMap _ 'Proxy = Mempty
 
 instance PFoldableWithIndex (Tagged s) where
   type IfoldMap f ('Tagged a) = f @@ '() @@ a

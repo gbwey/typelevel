@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -50,14 +49,14 @@ type instance Apply (PadZipWithSym2 x y) z = PadZipWith x y z
 
 instance PAlign [] where
   type Nil = '[]
-  type AlignWith f '[] '[] = '[]
+  type AlignWith _ '[] '[] = '[]
   type AlignWith f (a ': as) '[] = f :.: ThisSym0 <$> (a ': as)
   type AlignWith f '[] (b ': bs) = f :.: ThatSym0 <$> (b ': bs)
   type AlignWith f (a ': as) (b ': bs) = (f @@ 'These a b) ': AlignWith f as bs
 
 instance PAlign Maybe where
   type Nil = 'Nothing
-  type AlignWith f 'Nothing 'Nothing = 'Nothing
+  type AlignWith _ 'Nothing 'Nothing = 'Nothing
   type AlignWith f ('Just a) ('Just b) = 'Just (f @@ 'These a b)
   type AlignWith f ('Just a) 'Nothing = 'Just (f @@ 'This a)
   type AlignWith f 'Nothing ('Just b) = 'Just (f @@ 'That b)
@@ -78,8 +77,8 @@ class (PAlign f, PSemigroup a) => SalignC f a where
 instance (PAlign f, PSemigroup a) => SalignC f a
 
 type family MergeThese (f :: a ~> a ~> a) (arg :: These a a) :: a where
-  MergeThese f ('This a) = a
-  MergeThese f ('That a1) = a1
+  MergeThese _ ('This a) = a
+  MergeThese _ ('That a1) = a1
   MergeThese f ('These a a1) = f @@ a @@ a1
 
 data MergeTheseSym0 :: (a ~> a ~> a) ~> These a a ~> a
@@ -89,9 +88,9 @@ data MergeTheseSym1 :: (a ~> a ~> a) -> These a a ~> a
 type instance Apply (MergeTheseSym1 x) y = MergeThese x y
 
 type family FromThese (arg :: a) (arg1 :: b) (th :: These a b) :: (a,b) where
-  FromThese a0 b0 ('This a) = '(a, b0)
-  FromThese a0 b0 ('That b) = '(a0, b)
-  FromThese a0 b0 ('These a b) = '(a, b)
+  FromThese _ b0 ('This a) = '(a, b0)
+  FromThese a0 _ ('That b) = '(a0, b)
+  FromThese _ _ ('These a b) = '(a, b)
 
 data FromTheseSym0 :: a ~> b ~> These a b ~> (a,b)
 type instance Apply FromTheseSym0 x = FromTheseSym1 x

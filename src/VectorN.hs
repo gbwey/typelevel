@@ -1,9 +1,5 @@
 -- Vec is an inductive defined vector that can be work in multiple dimensions
-{-# OPTIONS -Wall #-}
-{-# OPTIONS -Wno-compat #-}
-{-# OPTIONS -Wincomplete-record-updates #-}
 {-# OPTIONS -Wno-incomplete-uni-patterns #-}
-{-# OPTIONS -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -30,7 +26,7 @@ import GHC.TypeLits hiding (natVal,natVal')
 import Data.Kind (Type)
 import Control.Monad
 import Data.Foldable
-import Data.List
+import Data.List (intercalate)
 import Control.Lens hiding (Cons)
 import Control.Applicative
 import qualified Data.Semigroup as SG
@@ -44,36 +40,6 @@ import PTraversable
 import PEq
 import PFoldable
 import PN
-{-
-src\VectorN.hs:33:8: warning: [-Wcompat-unqualified-imports]
-    To ensure compatibility with future core libraries changes
-    imports to Data.List should be
-    either qualified or have an explicit import list.
-   |
-33 | import Data.List
-   |        ^^^^^^^^^
-
-src\VectorN.hs:82:3: warning: [-Woverlapping-patterns]
-    Pattern match has inaccessible right hand side
-    In an equation for ‘<>’: <> VZ VZ = ...
-   |
-82 |   VZ <> VZ = VZ
-   |   ^^^^^^^^^^^^^
-
-src\VectorN.hs:94:3: warning: [-Woverlapping-patterns]
-    Pattern match has inaccessible right hand side
-    In an equation for ‘<*>’: <*> VZ VZ = ...
-   |
-94 |   VZ <*> VZ = VZ
-   |   ^^^^^^^^^^^^^^
-
-src\VectorN.hs:159:1: warning: [-Woverlapping-patterns]
-    Pattern match has inaccessible right hand side
-    In an equation for ‘vzip’: vzip _ VZ VZ = ...
-    |
-159 | vzip _ VZ VZ = VZ
-    | ^^^^^^^^^^^^^^^^^
--}
 
 -- we want stuff to evaluate so use type family not type synonyms
 type family Vec' (n :: Nat) a where
@@ -88,13 +54,22 @@ instance (Applicative (Vec n), VPure n, Num a) => Num (Vec n a) where
   signum = fmap signum
   fromInteger = pure . fromInteger
 
-data Vec n (a :: Type) where
+data Vec (n :: N) (a :: Type) where
   VZ :: Vec 'Z a
   VS :: a -> Vec n a -> Vec ('S n) a
 
 infixr 1 `VS`
 
-{-# COMPLETE (:&) #-}
+-- https://gitlab.haskell.org/ghc/ghc/-/issues/14253
+-- COMPLETE interferes with VZ <> VZ --would need to change to VZ <> _
+{-
+C:\\work\typelevel\src\VectorN.hs:155:1: warning: [-Woverlapping-patterns]
+    Pattern match has inaccessible right hand side
+    In an equation for â€˜vzipâ€™: vzip _ VZ VZ = ...
+    |
+155 | vzip _ VZ VZ = VZ
+-}
+-- {-# COMPLETE (:&) #-}
 pattern (:&) :: forall (n :: N) a.
                       () =>
                       forall (n1 :: N). (n ~ 'S n1) => a -> Vec n1 a -> Vec n a
@@ -109,8 +84,8 @@ data VSSym1 :: a -> Vec n a ~> Vec ('S n) a
 type instance Apply (VSSym1 x) y = 'VS x y
 
 instance Semigroup a => Semigroup (Vec n a) where
-  VZ <> VZ = VZ
-  VS a va <> VS b vb = VS (a <> b) (va <> vb)
+    VZ <> VZ = VZ
+    VS a va <> VS b vb = VS (a <> b) (va <> vb)
 
 instance (VPure n, Monoid a) => Monoid (Vec n a) where
   mempty = vpure @n mempty
@@ -240,7 +215,7 @@ vind' = vind @(ToN i)
 -- should be based on length of 'is'
 type family Rewrite a is where
   Rewrite a '[] = a
-  Rewrite (Vec n a) (i ': is) = Rewrite a is
+  Rewrite (Vec _ a) (_ ': is) = Rewrite a is
 
 -- need a type class to calculate 'b' ie the result type
 -- ie given 5 dimensions and we only search on 3 then we get some shape
@@ -439,7 +414,7 @@ vslice' = vdrop @(ToN m) . vtake @(ToN m :+ ToN n1) @n2
 -- can only really split on the last dimension
 -- creates a n-dimensional vector using is as the sizes and matches the type of v
 type family DimZ (is :: [N]) (v :: Type) :: Type where
-  DimZ (i ': is) (Vec n a) = Vec i (DimZ is a)
+  DimZ (i ': is) (Vec _ a) = Vec i (DimZ is a)
   DimZ '[] a = a
 
 -- creates a n-dimensional vector using is as the sizes and matches the type of v but diff from n
@@ -476,12 +451,12 @@ dimsP _ = getNToInts @(Dim a)
 -- get dimensions of Vec as kind [N]
 type family Dim v :: [N] where
   Dim (Vec n a) = n ': Dim a
-  Dim a = '[]
+  Dim _ = '[]
 
 -- get dimensions of Vec as kind [Nat]
 type family DimX v :: [Nat] where
   DimX (Vec n a) = ToNat n ': DimX a
-  DimX a = '[]
+  DimX _ = '[]
 
 type family ToNs ns where ToNs ns = Map ToNSym0 ns
 
@@ -542,8 +517,8 @@ vlensN' :: forall (is :: [Nat]) (ns :: [Nat]) a . VLens (ToNs is) (ToNs ns) a =>
 vlensN' = vlensN @(ToNs is) @(ToNs ns)
 
 type family UnDimZ (is :: [N]) (ns :: [N]) a where
-  UnDimZ '[] ns a = a
-  UnDimZ (i ': is) (n ': ns) a = Vec n (UnDimZ is ns a)
+  UnDimZ '[] _ a = a
+  UnDimZ (_ ': is) (n ': ns) a = Vec n (UnDimZ is ns a)
 
 type family UnDimZ' (i :: Nat) (ns :: [N]) a where
   UnDimZ' i ns a = Foldr (TyCon2Sym1 Vec) a (Take i ns)
@@ -619,7 +594,7 @@ headv' v  =
 
 type family VRep n a where
   VRep ('S n) a = a ': VRep n a
-  VRep 'Z a = '[]
+  VRep 'Z _ = '[]
 
 vheadLens :: forall ns a v . (UnDimZ (VRep (VLen ns) 'Z) ns a ~ v, VLens (VRep (VLen ns) 'Z) ns a, ns ~ DimNS v, v ~ UnDim (DimNS v) (DimA v), a ~ DimA v)
   => v -> a
@@ -629,16 +604,16 @@ vheadLens v =
 
 type family DimNS v where
   DimNS (Vec n a) = n ': DimNS a
-  DimNS a = '[]
+  DimNS _ = '[]
 
 type family DimA v where
-  DimA (Vec n a) = DimA a
+  DimA (Vec _ a) = DimA a
   DimA a = a
 
 -- lifted tuples
 type family DimP v :: [(N, Type)] where
   DimP (Vec n a) = '(n,a) ': DimP a
-  DimP a = '[]
+  DimP _ = '[]
 
 
 type family DimAll v where DimAll v = Second LstSym0 (UnZip (DimP v))
@@ -669,7 +644,7 @@ instance PEq1 a => PEq1 (Vec ('S n) a) where
   type Vec ('S n) a ==== Vec ('S m) b = n ==== m && a ==== b
 
 instance PEq1 (SG.Arg x y) where
-  type SG.Arg x y ==== SG.Arg x1 y1 = x DTE.== x1
+  type SG.Arg x y ==== SG.Arg x1 _ = x DTE.== x1
 
 instance PEq1 SG.All where
   type SG.All ==== SG.All = 'True
@@ -695,14 +670,14 @@ instance PEq (Vec ('S n) a0) where
   -- type x === y = x DTE.== y
 
 instance PFunctor (Vec 'Z) where
-  type Fmap f 'VZ = 'VZ
+  type Fmap _ 'VZ = 'VZ
 
 -- need TypeInType cos GADT?
 instance PFunctor (Vec ('S n)) where
   type Fmap f ('VS a v) = 'VS (f @@ a) $$ Fmap f v
 
 instance PApplicative (Vec 'Z) where
-  type Pure a = 'VZ
+  type Pure _ = 'VZ
   type 'VZ <*> 'VZ = 'VZ
 
 instance PApplicative (Vec ('S n)) where
@@ -710,13 +685,13 @@ instance PApplicative (Vec ('S n)) where
   type 'VS ab vab <*> 'VS a va = 'VS (ab @@ a) $$ vab <*> va
 
 instance PFoldable (Vec 'Z) where
-  type FoldMap am 'VZ = Mempty
+  type FoldMap _ 'VZ = Mempty
 
 instance PFoldable (Vec ('S n)) where
   type FoldMap am ('VS a v) = am @@ a <> FoldMap am v
 
 instance PTraversable (Vec 'Z) where
-  type Traverse afb 'VZ = Pure 'VZ
+  type Traverse _ 'VZ = Pure 'VZ
 
 instance PTraversable (Vec ('S n)) where
   type Traverse afb ('VS a v) = VSSym0 <$> afb @@ a <*> Traverse afb v
@@ -755,8 +730,8 @@ checkTrueIsTrue :: ('True ~ 'True => ()) -> ()
 checkTrueIsTrue x = x
 -}
 type family VMin (m :: N) (n :: N) :: N where
-  VMin 'Z n = 'Z
-  VMin m 'Z = 'Z
+  VMin 'Z _ = 'Z
+  VMin _ 'Z = 'Z
   VMin ('S m) ('S n) = 'S (VMin m n)
 
 vzipMinWith :: forall m n o a b c . VMin m n ~ o => (a -> b -> c) -> Vec m a -> Vec n b -> Vec o c

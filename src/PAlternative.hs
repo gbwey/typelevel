@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -63,7 +62,7 @@ instance PAlternative ZipList where
 
 instance PAlternative Maybe where
   type Empty = 'Nothing
-  type 'Just a <|> x = 'Just a
+  type 'Just a <|> _ = 'Just a
   type 'Nothing <|> y = y
 
 instance (PAlternative g, PAlternative h) => PAlternative (Compose g h) where

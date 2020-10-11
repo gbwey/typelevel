@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -99,7 +98,7 @@ type instance Apply (SSym2 eab ea) e = S eab ea e
 
 
 type family K (x :: k) (y :: k1) :: k where
-  K x y = x
+  K x _ = x
 
 data KSym0 :: a ~> b ~> a
 type instance Apply KSym0 x = KSym1 x
@@ -109,7 +108,7 @@ type instance Apply (KSym1 x) y = K x y
 
 
 type family KK (x :: k) (y :: k) :: k where
-  KK x y = x
+  KK x _ = x
 
 data KKSym0 :: a ~> a ~> a
 type instance Apply KKSym0 x = KKSym1 x
@@ -246,13 +245,13 @@ data SMaybeSym2 :: (a ~> a ~> a) -> Maybe a -> Maybe a ~> Maybe a
 type instance Apply (SMaybeSym2 x y) z = SMaybe x y z
 
 type family SMaybe (f :: a ~> a ~> a) (x :: Maybe a) (y :: Maybe a) :: Maybe a where
-  SMaybe f a 'Nothing = a
-  SMaybe f 'Nothing b = b
+  SMaybe _ a 'Nothing = a
+  SMaybe _ 'Nothing b = b
   SMaybe f ('Just a) ('Just b) = 'Just (f @@ a @@ b)
 
 
 type family Foldr (f :: j ~> k ~> k) (z :: k) (xs :: [j]) :: k where
-  Foldr f z '[]       = z
+  Foldr _ z '[]       = z
   Foldr f z (x ': xs) = f @@ x $ Foldr f z xs
 
 data FoldrSym0 :: (j ~> k ~> k) ~> k ~> [j] ~> k
@@ -266,8 +265,8 @@ type instance Apply (FoldrSym2 x y) z = Foldr x y z
 
 
 type family Foldr1 (f :: k ~> k ~> k) (xs :: [k]) :: k where
-  Foldr1 f '[] = TypeError ('Text "Foldr1: empty list")
-  Foldr1 f '[x] = x
+  Foldr1 _ '[] = TypeError ('Text "Foldr1: empty list")
+  Foldr1 _ '[x] = x
   Foldr1 f (x ': xs) = f @@ x $ Foldr1 f xs
 
 data Foldr1Sym0 :: (k ~> k ~> k) ~> [k] ~> k
@@ -276,10 +275,8 @@ type instance Apply Foldr1Sym0 x = Foldr1Sym1 x
 data Foldr1Sym1 :: (k ~> k ~> k) -> [k] ~> k
 type instance Apply (Foldr1Sym1 x) y = Foldr1 x y
 
-
-
 type family FoldrNE (f :: k ~> k ~> k) (xs :: NonEmpty k) :: k where
-  FoldrNE f (x ':| '[]) = x
+  FoldrNE _ (x ':| '[]) = x
   FoldrNE f (x ':| (x1 ': xs)) = f @@ x $ FoldrNE f (x1 ':| xs)
 
 data FoldrNESym0 :: (k ~> k ~> k) ~> (NonEmpty k ~> k)
@@ -291,7 +288,7 @@ type instance Apply (FoldrNESym1 x) y = FoldrNE x y
 -- oops found a mistake where (f @@ x) @@ z    should be (f @@ z) @@ x
 -- only way i found it was to write the exact xlation at the value level: ie foldlTest
 type family Foldl (f :: k ~> j ~> k) (z :: k) (xs :: [j]) :: k where
-  Foldl f z '[]       = z
+  Foldl _ z '[]       = z
   Foldl f z (x ': xs) = Foldl f (f @@ z @@ x) xs
 
 data FoldlSym0 :: (k ~> j ~> k) ~> k ~> [j] ~> k
@@ -304,7 +301,7 @@ data FoldlSym2 :: (k ~> j ~> k) -> k -> [j] ~> k
 type instance Apply (FoldlSym2 x y) z = Foldl x y z
 
 type family UnfoldNat (f :: Nat ~> b ~> b) (x :: b) (n :: Nat) :: b where
-  UnfoldNat f b 0 = b
+  UnfoldNat _ b 0 = b
   UnfoldNat f b n = UnfoldNat f (f @@ n @@ b) (n - 1)
 
 data UnfoldNatSym0 :: (Nat ~> b ~> b) ~> b ~> Nat ~> b
@@ -317,7 +314,7 @@ data UnfoldNatSym2 :: (Nat ~> b ~> b) -> b -> Nat ~> b
 type instance Apply (UnfoldNatSym2 x y) z = UnfoldNat x y z
 
 type family UnfoldNat2 (f :: s ~> (a,s)) (n :: Nat) (x :: s) :: [a] where
-  UnfoldNat2 f 0 s = '[]
+  UnfoldNat2 _ 0 _ = '[]
   UnfoldNat2 f n s = UnCurry ConsSym0 (Second (UnfoldNat2Sym2 f (n-1)) (f @@ s))
 
 data UnfoldNat2Sym0 :: (s ~> (a,s)) ~> Nat ~> s ~> [a]
@@ -335,8 +332,8 @@ type family FromMaybe (arg :: a) (arg1 :: Maybe a) :: a where
 
 
 type family Maybe' (b :: k) (f :: a ~> k) (d :: Maybe a) :: k where
-  Maybe' b f 'Nothing = b
-  Maybe' b f ('Just a) = f @@ a
+  Maybe' b _ 'Nothing = b
+  Maybe' _ f ('Just a) = f @@ a
 
 data Maybe'Sym0 :: b ~> (a ~> b) ~> Maybe a ~> b
 type instance Apply Maybe'Sym0 x = Maybe'Sym1 x
@@ -350,8 +347,8 @@ type instance Apply (Maybe'Sym2 x y) z = Maybe' x y z
 
 
 type family Either' (f :: a ~> k) (g :: a ~> k) (d :: Either a b) :: k where
-  Either' f g ('Left a) = f @@ a
-  Either' f g ('Right b) = g @@ b
+  Either' f _ ('Left a) = f @@ a
+  Either' _ g ('Right b) = g @@ b
 
 data Either'Sym0 :: (a ~> c) ~> (b ~> c) ~> Either a b ~> c
 type instance Apply Either'Sym0 x = Either'Sym1 x
@@ -427,7 +424,7 @@ type family Second g a where Second g a = (***) Id g a
 
 
 type family ZipN (n :: Nat) (xs :: [a]) :: [(Nat,a)] where
-  ZipN n '[] = '[]
+  ZipN _ '[] = '[]
   ZipN n (a ': as) = '(n,a) ': ZipN (n+1) as
 
 data ZipNSym0 :: Nat ~> [a] ~> [(Nat,a)]
@@ -576,9 +573,9 @@ type instance Apply (TyCon3Sym3 t a b) c = t a b c
 
 -- | And
 type family (&&) (x :: Bool) (y :: Bool) :: Bool where
-    'False && x = 'False
+    'False && _ = 'False
     'True && x = x
-    x && 'False = 'False
+    _ && 'False = 'False
     x && 'True = x
     x && x = x
 
@@ -592,9 +589,9 @@ type instance Apply (AndSym1 x) y = x && y
 
 
 type family (||) (x :: Bool) (y :: Bool) :: Bool where
-    'True || x = 'True
+    'True || _ = 'True
     'False || x = x
-    x || 'True = 'True
+    _ || 'True = 'True
     x || 'False = x
     x || x = x
 
@@ -609,9 +606,9 @@ type instance Apply (OrSym1 x) y = x || y
 
 type family Impl (a :: Bool) (b :: Bool) :: Bool where
   Impl 'True x = x
-  Impl 'False x = 'True
+  Impl 'False _ = 'True
   Impl x 'True = x
-  Impl x 'False = 'True
+  Impl _ 'False = 'True
 
 data ImplSym0 :: Bool ~> Bool ~> Bool
 type instance Apply ImplSym0 x = ImplSym1 x
@@ -621,8 +618,8 @@ type instance Apply (ImplSym1 x) y = Impl x y
 
 -- not lazy -- careful using this!
 type family If (b :: Bool) (t :: k) (f :: k) :: k where
-    If 'False t f = f
-    If 'True  t f = t
+    If 'False _ f = f
+    If 'True  t _ = t
 
 data IfSym0 :: Bool ~> k ~> k ~> k
 type instance Apply IfSym0 x = IfSym1 x
@@ -737,7 +734,7 @@ type instance Apply LenSym0 as = Len as
 
 type family Len (as :: [k]) :: Nat where
   Len '[] = 0
-  Len (a ': as) = 1 + Len as
+  Len (_ ': as) = 1 + Len as
 
 data CmpNatSym0 :: Nat ~> Nat ~> Ordering
 type instance Apply CmpNatSym0 x = CmpNatSym1 x
@@ -766,23 +763,23 @@ type instance Apply TlSym0 xs = Tl xs
 
 
 type family Lst (xs :: [k]) :: k where
-  Lst (x ': x1 ': xs) = Lst (x1 ': xs)
+  Lst (_ ': x1 ': xs) = Lst (x1 ': xs)
   Lst '[x] = x
 
 type family Hd (xs :: [k]) :: k where
-  Hd (x ': xs) = x
+  Hd (x ': _) = x
 
 type family Tl (xs :: [k]) :: [k] where
-  Tl (x ': xs) = xs
+  Tl (_ ': xs) = xs
 
 type family Swap (xs :: (a, b)) :: (b, a) where
   Swap '(a,b) = '(b,a)
 
 type family Fst (xs :: (a, b)) :: a where
-  Fst '(a,b) = a
+  Fst '(a,_) = a
 
 type family Snd (xs :: (a, b)) :: b where
-  Snd '(a,b) = b
+  Snd '(_,b) = b
 
 
 data PairSym0 :: a ~> b ~> (a,b)
@@ -796,7 +793,7 @@ type family PairSym1' a where PairSym1' a = TyCon2Sym2 '(,) a
 type family Pair a b where Pair a b = '(,) a b
 
 type family Take (n :: Nat) (xs :: [a]) :: [a] where
-  Take 0 xs = '[]
+  Take 0 _ = '[]
   Take n (a ': as) = a ': Take (PredSym1 n) as
   Take n '[] = TypeError ('Text "Take: no more data left n=" ':<>: 'ShowType n)
 
@@ -809,12 +806,12 @@ type instance Apply (TakeSym1 x) y = Take x y
 
 type family DropUnsafe (n :: Nat) (xs :: [a]) :: [a] where
   DropUnsafe 0 xs = xs
-  DropUnsafe n (a ': as) = DropUnsafe (PredSym1 n) as
-  DropUnsafe n '[] = '[]
+  DropUnsafe n (_ ': as) = DropUnsafe (PredSym1 n) as
+  DropUnsafe _ '[] = '[]
 
 type family Drop (n :: Nat) (xs :: [a]) :: [a] where
   Drop 0 xs = xs
-  Drop n (a ': as) = Drop (PredSym1 n) as
+  Drop n (_ ': as) = Drop (PredSym1 n) as
   Drop n '[] = TypeError ('Text "Drop: no more data left n=" ':<>: 'ShowType n)
 
 data DropSym0 :: Nat ~> [k] ~> [k]
@@ -823,12 +820,10 @@ type instance Apply DropSym0 x = DropSym1 x
 data DropSym1 :: Nat -> [k] ~> [k]
 type instance Apply (DropSym1 x) y = Drop x y
 
-
-
 -- stops as soon as one is empty
 type family ZipWithMin (f :: a ~> b ~> c) (as :: [a]) (bs :: [b]) :: [c] where
-   ZipWithMin f as '[] = '[]
-   ZipWithMin f '[] bs = '[]
+   ZipWithMin _ _ '[] = '[]
+   ZipWithMin _ '[] _ = '[]
    ZipWithMin f (a ': as) (b ': bs) = f @@ a @@ b ': ZipWithMin f as bs
 
 
@@ -850,9 +845,9 @@ data TheseSym1 :: a -> b ~> These a b
 type instance Apply (TheseSym1 a) b = 'These a b
 
 type family These' (f :: a ~> c) (g :: b ~> c) (h :: a ~> b ~> c) (th :: These a b) :: c where
-  These' f g h ('This a) = f @@ a
-  These' f g h ('That b) = g @@ b
-  These' f g h ('These a b) = h @@ a @@ b
+  These' f _ _ ('This a) = f @@ a
+  These' _ g _ ('That b) = g @@ b
+  These' _ _ h ('These a b) = h @@ a @@ b
 
 data These'Sym0 :: (a ~> c) ~> (b ~> c) ~> (a ~> b ~> c) ~> These a b ~> c
 type instance Apply These'Sym0 x = These'Sym1 x
@@ -877,7 +872,7 @@ data Map1Sym1 :: (j ~> k) -> (NonEmpty j ~> NonEmpty k)
 type instance Apply (Map1Sym1 x) y = Map1 x y
 
 type family Map (f :: j ~> k) (xs :: [j]) :: [k] where
-  Map f '[] = '[]
+  Map _ '[] = '[]
   Map f (x ': xs) = f @@ x ': Map f xs
 
 data MapSym0 :: (j ~> k) ~> [j] ~> [k]
@@ -894,12 +889,12 @@ type family AA2 :: k -> k1 -> k2
 
 type family IterateNat (n :: Nat) (f :: k ~> k) (s :: k) :: [k] where
 --  IterateNat' f s n = UnfoldNat (f :..: FlipSym1 KSym0) s n -- 'True
-  IterateNat 0 f s = '[]
+  IterateNat 0 _ _ = '[]
   IterateNat n f s = s ': IterateNat (n-1) f (f @@ s)
 
 type family IterateNat' (n :: Nat) (f :: k ~> k) (s :: k) :: k where
 --  IterateNat' f s n = UnfoldNat (f :..: FlipSym1 KSym0) s n -- 'True
-  IterateNat' 0 f s = s
+  IterateNat' 0 _ s = s
   IterateNat' n f s = IterateNat' (n-1) f (f @@ s)
 
 data IterateNatSym0 :: Nat ~> (a ~> a) ~> a ~> a
@@ -911,13 +906,11 @@ type instance Apply (IterateNatSym1 x) y = IterateNatSym2 x y
 data IterateNatSym2 :: Nat -> (a ~> a) -> a ~> a
 type instance Apply (IterateNatSym2 x y) z = IterateNat' x y z
 
-
-
 type family Replicate n a where
   Replicate n a = Iterate n Id a
 
 type family Iterate (n :: Nat) (f :: a ~> a) (s :: a) :: [a] where
-  Iterate 0 f a = '[]
+  Iterate 0 _ _ = '[]
   Iterate n f a = a ': Iterate (PredSym1 n) f (f @@ a)
 
 data IterateSym0 :: Nat ~> (a ~> a) ~> a ~> [a]
@@ -958,7 +951,7 @@ type family SplitAt (i :: Nat) (as :: [a]) :: ([a], [a]) where
              '(Take i as, Drop i as)
 
 type family Break (p :: a ~> Bool) (as :: [a]) :: ([a], [a]) where
-  Break p '[] = '( '[], '[] )
+  Break _ '[] = '( '[], '[] )
   Break p (a ': as) =
     If
       (p @@ a)
@@ -969,20 +962,20 @@ type family Span (p :: a ~> Bool) (as :: [a]) :: ([a], [a]) where
   Span p as = Break (NotSym0 :.: p) as
 
 type family Partition (p :: a ~> Bool) (xs :: [a]) :: ([a], [a]) where
-  Partition p '[] = '( '[], '[] )
+  Partition _ '[] = '( '[], '[] )
   Partition p (a ': as) = If (p @@ a) (FirstSym1 (ConsSym1 a)) (SecondSym1 (ConsSym1 a)) @@ Partition p as
 
 type family TakeWhile (p :: a ~> Bool) (xs :: [a]) :: [a] where
-  TakeWhile p '[] = '[]
+  TakeWhile _ '[] = '[]
   TakeWhile p (a ': as) = If (p @@ a) (a ': TakeWhile p as) '[]
 
 type family DropWhile (p :: a ~> Bool) (xs :: [a]) :: [a] where
-  DropWhile p '[] = '[]
+  DropWhile _ '[] = '[]
   DropWhile p (a ': as) = If (p @@ a) (DropWhile p as) (a ': as)
 
 --type family MapMaybe (p :: a ~> Maybe b) (xs :: [a]) :: [b] where
 type family MapMaybe p xs where
-  MapMaybe p '[] = '[]
+  MapMaybe _ '[] = '[]
   MapMaybe p (a ': as) = Maybe' (MapMaybe p as) (FlipSym2 ConsSym0 (MapMaybe p as)) (p @@ a)
 
 class GetBool (a :: Bool) where
@@ -1071,12 +1064,12 @@ type family Err (s :: Symbol) :: b where
   Err s = TypeError ('Text "Err thrown: " ':<>: 'ShowType s)
 
 type family FailWhen (b :: Bool) (err :: ErrorMessage) (x :: r) :: r where
-  FailWhen 'True err z = TypeError ('Text "FailWhen: " ':<>: err)
-  FailWhen 'False err z = z
+  FailWhen 'True err _ = TypeError ('Text "FailWhen: " ':<>: err)
+  FailWhen 'False _ z = z
 
 type family FailUnless (b :: Bool) (err :: ErrorMessage) (x :: r) :: r where
-  FailUnless 'False err z = TypeError ('Text "FailUnless: " ':<>: err)
-  FailUnless 'True err z = z
+  FailUnless 'False err _ = TypeError ('Text "FailUnless: " ':<>: err)
+  FailUnless 'True _ z = z
 
 -- these can all be handled by existing combinators
 --type On c f g a b = c (f a) (g b)  -- curry (uncurry c . (f *** g))
@@ -1211,7 +1204,7 @@ type family UnAll (x :: SG.All) where
 
 
 type family IToList' i as where
-  IToList' i '[] = '[]
+  IToList' _ '[] = '[]
   IToList' i (a ': as) = '(i, a) ': IToList' (i+1) as
 
 type family SwapLR lr where
@@ -1236,15 +1229,15 @@ type instance Apply SingletonNESym0 x = SingletonNE x
 -- this is a cool trick but kind! doesnt work so well in ghci
 -- to avoid this use IToList' instead of the indexed lens version IToList that uses FWI
 type family FWI (arg :: Type) :: Type
-type instance FWI [a] = Nat
-type instance FWI (NonEmpty a) = Nat
-type instance FWI (Maybe a) = ()
-type instance FWI (Identity a) = ()
-type instance FWI (ZipList a) = Nat
-type instance FWI (Proxy a) = Void
-type instance FWI (Tagged s a) = ()
+type instance FWI [_] = Nat
+type instance FWI (NonEmpty _) = Nat
+type instance FWI (Maybe _) = ()
+type instance FWI (Identity _) = ()
+type instance FWI (ZipList _) = Nat
+type instance FWI (Proxy _) = Void
+type instance FWI (Tagged _ _) = ()
 type instance FWI (Compose f g a) = (FWI (f (g a)), FWI (g a))
-type instance FWI (e,a) = e
+type instance FWI (e,_) = e
 
 type family Undefined where Undefined = TypeError ('Text "Undefined called")
 
@@ -1271,31 +1264,31 @@ type family CatMaybes (arg :: [Maybe a]) :: [a] where
 -- find first match
 -- this is strict: it will run every one!!
 type family Case (x :: a) (fs :: [(a, b)]) (y :: b) :: b where
-  Case a0 '[] b0 = b0
-  Case a ('(a,b) ': fs) b0 = b
-  Case a0 ('(a,b) ': fs) b0 = Case a0 fs b0
+  Case _ '[] b0 = b0
+  Case a ('(a,b) ': _) _ = b
+  Case a0 ('(_,_) ': fs) b0 = Case a0 fs b0
 
 type family Case' (x :: a) (fs :: [(a, b)]) :: b where
   Case' a fs = Case a fs (TypeError ('Text "Case': no match ie missing a case!"))
 
 
 type family CaseAll (fs :: [(a ~> Bool, Bool ~> b)]) (y :: b) (x :: a) :: b where
-  CaseAll '[] b0 a1 = b0
+  CaseAll '[] b0 _ = b0
   CaseAll ('(p, f) ': fs) b0 a = CaseAll' (p @@ a) a f fs b0
 
 type family CaseAll' b a f fs b0 where
-  CaseAll' 'True a f fs b0 = f @@ 'True
-  CaseAll' 'False a f fs b0 = CaseAll fs b0 a
+  CaseAll' 'True _ f _ _ = f @@ 'True
+  CaseAll' 'False a _ fs b0 = CaseAll fs b0 a
 
 
 -- version with 'a' at the end so you can compose it
 type family CaseWhen (fs :: [(a ~> Bool, a ~> b)]) (y :: b) (x :: a) :: b where
-  CaseWhen '[] b0 a1 = b0
+  CaseWhen '[] b0 _ = b0
   CaseWhen ('(p, f) ': fs) b0 a = CaseWhen' (p @@ a) a f fs b0
 
 type family CaseWhen' b a f fs b0 where
-  CaseWhen' 'True a f fs b0 = f @@ a
-  CaseWhen' 'False a f fs b0 = CaseWhen fs b0 a
+  CaseWhen' 'True a f _ _ = f @@ a
+  CaseWhen' 'False a _ fs b0 = CaseWhen fs b0 a
 
 
 data CaseWhenSym0 :: [(a ~> Bool, a ~> b)] ~> b ~> a ~> b
@@ -1309,9 +1302,9 @@ type instance Apply (CaseWhenSym2 x y) z = CaseWhen x y z
 
 -- version with 'a' at the end so you can compose it
 type family CaseFlip (fs :: [(a, b)]) (y :: b) (x :: a) :: b where
-  CaseFlip '[] b0 a1 = b0
-  CaseFlip ('(a,b) ': fs) b0 a = b
-  CaseFlip ('(a,b) ': fs) b0 a0 = CaseFlip fs b0 a0
+  CaseFlip '[] b0 _ = b0
+  CaseFlip ('(a,b) ': _) _ a = b
+  CaseFlip ('(_,_) ': fs) b0 a0 = CaseFlip fs b0 a0
 
 
 data CaseFlipSym0 :: [(a,b)] ~> b ~> a ~> b
@@ -1325,12 +1318,12 @@ type instance Apply (CaseFlipSym2 x y) z = CaseFlip x y z
 
 
 type family UnOrdering (o :: Ordering) (arg :: x) (arg1 :: x) (arg2 :: x) :: x where
-  UnOrdering 'LT x y z = x
-  UnOrdering 'EQ x y z = y
-  UnOrdering 'GT x y z = z
+  UnOrdering 'LT x _ _ = x
+  UnOrdering 'EQ _ y _ = y
+  UnOrdering 'GT _ _ z = z
 
 type family Absurd (arg :: Void) :: a where
-  Absurd v = Undefined
+  Absurd _ = Undefined
 
 data AbsurdSym0 :: Void ~> a
 type instance Apply AbsurdSym0 x = Absurd x
@@ -1339,17 +1332,17 @@ type family FindIndex (arg :: a) (args :: [a]) :: Maybe Nat where
   FindIndex a0 as = FindIndexImpl 0 a0 as
 
 type family FindIndexImpl (n :: Nat) (arg :: a) (args :: [a]) :: Maybe Nat where
-  FindIndexImpl n a0 '[] = 'Nothing
-  FindIndexImpl n a (a ': as) = 'Just n
-  FindIndexImpl n a0 (a ': as) = FindIndexImpl (n+1) a0 as
+  FindIndexImpl _ _ '[] = 'Nothing
+  FindIndexImpl n a (a ': _) = 'Just n
+  FindIndexImpl n a0 (_ ': as) = FindIndexImpl (n+1) a0 as
 
 type family FindAt (n :: Nat) (args :: [a]) :: Maybe a where
   FindAt n as = FindAtImpl 0 n as
 
 type family FindAtImpl (n :: Nat) (arg :: Nat) (args :: [a]) :: Maybe a where
-  FindAtImpl i n '[] = 'Nothing
-  FindAtImpl i i (a ': as) = 'Just a
-  FindAtImpl i n (a ': as) = FindAtImpl (i+1) n as
+  FindAtImpl _ _ '[] = 'Nothing
+  FindAtImpl i i (a ': _) = 'Just a
+  FindAtImpl i n (_ ': as) = FindAtImpl (i+1) n as
 
 data FindAtSym0 :: Nat ~> [a] ~> Maybe a
 type instance Apply FindAtSym0 x = FindAtSym1 x
@@ -1374,15 +1367,15 @@ type instance Apply (FindAt'Sym1 x) y = FindAt' x y
 
 
 type family Subset (as :: [k]) (bs :: [k]) :: Bool where
-  Subset '[] bs = 'True
+  Subset '[] _ = 'True
   Subset (a ': as) bs = Subset' as (Break (EqSym1 a) bs)
 
 type family Subset' (as :: [k]) (tps :: ([k], [k])) :: Bool where
-  Subset' as '(bs, '[]) = 'False
-  Subset' as '(bs, b ': bs1) = Subset as (bs ++ bs1)
+  Subset' _ '(_, '[]) = 'False
+  Subset' as '(bs, _ ': bs1) = Subset as (bs ++ bs1)
 
 type family DupsBy (f :: a ~> a ~> Bool) (as :: [a]) :: [a] where
-  DupsBy f '[] = '[]
+  DupsBy _ '[] = '[]
   DupsBy f (a ': as) = DupsBy' f (Partition (f @@ a) (a ': as))
 
 type family DupsBy' (f :: a ~> a ~> Bool) (tps :: ([a], [a])) :: [a] where
@@ -1436,18 +1429,18 @@ type family Curry3 (f :: ((a, b), c) ~> d) (x :: a) (y :: b) (z :: c) :: d where
 type family Tuple13' :: ((a, b), c) ~> a where
   Tuple13' = FstSym0 :.: FstSym0
 type family Tuple13 (f :: ((a, b), c)) :: a where
-  Tuple13 '( '(a,b), c) = a
+  Tuple13 '( '(a,_), _) = a
 
 type family Tuple23' :: ((a, b), c) ~> b where
   Tuple23' = SndSym0 :.: FstSym0
 type family Tuple23 (f :: ((a, b), c)) :: b where
-  Tuple23 '( '(a,b), c) = b
+  Tuple23 '( '(_,b), _) = b
 
 
 type family Tuple33' :: ((a, b), c) ~> c where
   Tuple33' = SndSym0
 type family Tuple33 (f :: ((a, b), c)) :: c where
-  Tuple33 '( '(a,b), c) = c
+  Tuple33 '( '(_,_), c) = c
 
 type family Maximum (xs :: [Nat]) :: Nat where
   Maximum xs = Foldr MaximumSym0 0 xs
@@ -1463,10 +1456,10 @@ type family Max' x y where
 
 -- has to match exactly -- could use applicative instance
 type family ZipWithExact (f :: a ~> b ~> c) (as :: [a]) (bs :: [b]) :: [c] where
-  ZipWithExact f '[] '[] = '[]
+  ZipWithExact _ '[] '[] = '[]
   ZipWithExact f (a ': as) (b ': bs) = f @@ a @@ b ': ZipWithExact f as bs
-  ZipWithExact f as '[] = TypeError ('Text "lhs is bigger by " ':<>: 'ShowType (Len as))
-  ZipWithExact f '[] bs = TypeError ('Text "rhs is bigger by " ':<>: 'ShowType (Len bs))
+  ZipWithExact _ as '[] = TypeError ('Text "lhs is bigger by " ':<>: 'ShowType (Len as))
+  ZipWithExact _ '[] bs = TypeError ('Text "rhs is bigger by " ':<>: 'ShowType (Len bs))
 
 data ZipWithExactSym0 :: (a ~> b ~> c) ~> [a] ~> [b] ~> [c]
 type instance Apply ZipWithExactSym0 x = ZipWithExactSym1 x
@@ -1479,7 +1472,7 @@ type instance Apply (ZipWithExactSym2 x y) z = ZipWithExact x y z
 
 type family Transpose (xs :: [[a]]) :: [[a]] where
   Transpose '[] = '[]
-  Transpose ( '[] ': ass) = '[]
+  Transpose ( '[] ': _) = '[]
   Transpose (as ': ass) = Map HdSym0 (as ': ass) ': Transpose (Map TlSym0 (as ': ass))
 
 type family Inits (xs :: [a]) :: [[a]] where
@@ -1540,10 +1533,10 @@ pnat :: forall n . KnownNat n => Int
 pnat = fromIntegral (natVal (Proxy @n))
 
 type family IsPrefixOf (arg :: [a]) (arg1 :: [a]) :: Bool where
-  IsPrefixOf '[] bs = 'True
-  IsPrefixOf as '[] = 'False
+  IsPrefixOf '[] _ = 'True
+  IsPrefixOf _ '[] = 'False
   IsPrefixOf (a ': as) (a ': bs) = IsPrefixOf as bs
-  IsPrefixOf (a ': as) (b ': bs) = 'False
+  IsPrefixOf (_ ': _) (_ ': _) = 'False
 
 data IsPrefixOfSym0 :: [a] ~> [a] ~> Bool
 type instance Apply IsPrefixOfSym0 x = IsPrefixOfSym1 x
@@ -1581,29 +1574,29 @@ Any' (IsPrefixOfSym1 (S.ToList "cde")) $$ Tails $$ S.ToList "abcdef" :: Bool
 -- doesnt work from :kind! without explicit forcing
 -- not well defined!
 type family UnWrap fa where
-  UnWrap (f a) = a
+  UnWrap (_ a) = a
   UnWrap x = TypeError ('Text "UnWrap: not a type constructor fa=" ':<>: 'ShowType x)
 
 type family UnWrap1 fab where
-  UnWrap1 (f a b) = a
+  UnWrap1 (_ a _) = a
 --  UnWrap1 (f a) = a
   UnWrap1 x = TypeError ('Text "UnWrap1: not a two type constructor fab=" ':<>: 'ShowType x)
 
 type family UnWrap2 fab where
-  UnWrap2 (f a b) = b
+  UnWrap2 (_ _ b) = b
 --  UnWrap2 (f a) = a
   UnWrap2 x = TypeError ('Text "UnWrap2: not a two type constructor fab=" ':<>: 'ShowType x)
 
 type family UnWrapBoth fab where
-  UnWrapBoth (f a b) = '(a,b)
+  UnWrapBoth (_ a b) = '(a,b)
   UnWrapBoth x = TypeError ('Text "UnWrapBoth: not a two type constructor fab=" ':<>: 'ShowType x)
 
 type family UnWrap' fa where
-  UnWrap' (f a) = a
+  UnWrap' (_ a) = a
   UnWrap' x = x
 
 type family Intercalate (d :: Symbol) (xs :: [Symbol]) :: Symbol where
-  Intercalate d '[] = ""
+  Intercalate _ '[] = ""
   Intercalate d (x ': xs) = Foldl (UnCurrySym1 StringSym0 :..: CurrySym1 (SecondSym1 (StringSym1 d))) x xs
 
 data IntercalateSym0 :: Symbol ~> [Symbol] ~> Symbol
@@ -1613,9 +1606,9 @@ data IntercalateSym1 :: Symbol -> [Symbol] ~> Symbol
 type instance Apply (IntercalateSym1 x) y = Intercalate x y
 
 type family ElemList (x :: a) (xs :: [a]) :: Bool where
-  ElemList x '[] = 'False
-  ElemList x (x ': xs) = 'True
-  ElemList x (x1 ': xs) = ElemList x xs
+  ElemList _ '[] = 'False
+  ElemList x (x ': _) = 'True
+  ElemList x (_ ': xs) = ElemList x xs
 
 --type family ElemList (x :: a) (xs :: [a]) :: Bool where
 --  ElemList x xs = Foldr (OrSym0 :.: EqSym1 x) 'False xs
@@ -1640,7 +1633,7 @@ type family GroupBy (f :: a ~> a ~> Bool) (args :: [a]) :: [[a]] where
   GroupBy f as = Foldr (GroupByImplSym1 f) '[] as
 
 type family GroupByImpl (f :: a ~> a ~> Bool) (arg :: a) (args :: [[a]]) :: [[a]] where
-  GroupByImpl f a '[] = '[ '[a] ]
+  GroupByImpl _ a '[] = '[ '[a] ]
   GroupByImpl f a ((a' ': xs) ': xxs) = If (f @@ a @@ a') ((a ': a' ': xs) ': xxs) ('[a] ': (a' ': xs) ': xxs)
 
 data GroupByImplSym0 :: (a ~> a ~> Bool) ~> a ~> [[a]] ~> [[a]]
@@ -1691,34 +1684,34 @@ doesnt work for type families cos not fully saturated although :kind! works
   :kind! MapT (AppendSymbol "tt") '["aaa","Bb"]
 -}
 type family MapT (f :: k -> k1) (xs :: [k]) :: [k1] where
-  MapT f '[]       = '[]
+  MapT _ '[]       = '[]
   MapT f (x ': xs) = f x ': MapT f xs
 
 type family FoldrT (f :: k -> k1 -> k1) (x :: k1) (xs :: [k]) :: k1 where
-  FoldrT f z '[] = z
+  FoldrT _ z '[] = z
   FoldrT f z (x ': xs) = f x (FoldrT f z xs)
 
 type family FoldlT (f :: k1 -> k -> k1) (x :: k1) (xs :: [k]) :: k1 where
-  FoldlT f z '[] = z
+  FoldlT _ z '[] = z
   FoldlT f z (x ': xs) = FoldlT f (f z x) xs
 
 type family FlipConsT (xs :: [k]) (x :: k) :: [k] where
   FlipConsT xs x = x ': xs
 
 type family ZipWithT (f :: k -> k1 -> k2) (xs :: [k]) (ys :: [k1]) :: [k2] where
-  ZipWithT f '[] '[] = '[]
+  ZipWithT _ '[] '[] = '[]
   ZipWithT f (x ': xs) (y ': ys) = f x y ': ZipWithT f xs ys
-  ZipWithT f '[] (y ': ys) = TypeError ('Text "ZipWithT left list is empty")
-  ZipWithT f (x ': xs) '[] = TypeError ('Text "ZipWithT right list is empty")
+  ZipWithT _ '[] (_ ': _) = TypeError ('Text "ZipWithT left list is empty")
+  ZipWithT _ (_ ': _) '[] = TypeError ('Text "ZipWithT right list is empty")
 
 -- this works too
 type family ElemT (f :: k -> Bool) (xs :: [k]) :: Maybe k where
-  ElemT p '[] = 'Nothing
+  ElemT _ '[] = 'Nothing
   ElemT p (x ': xs) = BoolT (ElemT p xs) ('Just x) (p x)
 
 type family BoolT (false :: k) (true :: k) (b :: Bool) :: k where
-  BoolT f t 'False = f
-  BoolT f t 'True = t
+  BoolT f _ 'False = f
+  BoolT _ t 'True = t
 
 {-
 -- here's where it breaks down: need to pass (a,s) to AB f but would not be fully saturated
@@ -1729,8 +1722,8 @@ type family AB (f :: s -> Maybe (a,s)) (arg :: (a,s)) :: [a] where
   AB f '(a,s) = a ': UnfoldrT f s
 -}
 type family MaybeT (nothing :: k) (just :: a -> k) (m :: Maybe a) :: k where
-  MaybeT n j 'Nothing = n
-  MaybeT n j ('Just a) = j a
+  MaybeT n _ 'Nothing = n
+  MaybeT _ j ('Just a) = j a
 
 {-
 >:kind! FoldrT (+) 99 '[1,2,3,4,5]

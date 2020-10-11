@@ -1,4 +1,4 @@
-resolver: lts-14.27
+resolver: nightly-2020-09-28
 
 packages:
 - .
@@ -7,3 +7,7 @@ extra-deps:
 - symbols-0.3.0.0
 
 # ghc-options: {"$locals": -ddump-to-file -ddump-hi}
+
+ghc-options:
+  "$locals": -fwrite-ide-info
+  "$everything": -haddock

@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -54,18 +53,18 @@ instance PSemigroup e => PApplicative (These e) where
   type 'This x <*> 'This y = 'This (x <> y)
   type 'This x <*> 'That a = 'These x a
   --type 'This x <*> 'These y a = 'These (x <> y) a   -- compiles fine even tho wrong cos same kind as b!
-  type 'This x <*> 'These y a = 'This (x <> y)
+  type 'This x <*> 'These y _ = 'This (x <> y)
 
-  type 'That ab <*> 'This y = 'This y
+  type 'That _ <*> 'This y = 'This y
   type 'That ab <*> 'That a = 'That (ab @@ a)
   type 'That ab <*> 'These y a = 'These y (ab @@ a)
 
-  type 'These x ab <*> 'This y = 'This (x <> y)
+  type 'These x _ <*> 'This y = 'This (x <> y)
   type 'These x ab <*> 'That a = 'These x (ab @@ a)
   type 'These x ab <*> 'These y a = 'These (x <> y) (ab @@ a)
 
 instance PMonoid z => PApplicative (Const z) where
-  type Pure a = 'Const Mempty
+  type Pure _ = 'Const Mempty
   type 'Const e <*> 'Const e1 = 'Const (e <> e1)
 
 instance PApplicative Identity where
@@ -74,7 +73,7 @@ instance PApplicative Identity where
 
 instance PApplicative [] where
   type Pure a = '[a]
-  type '[]  <*> as = '[]
+  type '[]  <*> _ = '[]
   type (ab ': abs) <*> as  = (ab <$> as) <> (abs <*> as)
 
 instance PApplicative NonEmpty where
@@ -84,17 +83,17 @@ instance PApplicative NonEmpty where
 instance PApplicative Maybe where
   type Pure a = 'Just a
   type 'Just ab <*> 'Just a  = 'Just (ab @@ a)
-  type 'Nothing <*> x = 'Nothing
-  type x <*> 'Nothing = 'Nothing
+  type 'Nothing <*> _ = 'Nothing
+  type _ <*> 'Nothing = 'Nothing
 
 
 
 instance PMonoid e => PApplicative (Either e) where
   type Pure a = 'Right a
   type 'Right ab <*> 'Right a  = 'Right (ab @@ a)
-  type 'Left x <*> 'Left y = 'Left x
-  type 'Right x <*> 'Left y = 'Left y
-  type 'Left x <*> 'Right y = 'Left x
+  type 'Left x <*> 'Left _ = 'Left x
+  type 'Right _ <*> 'Left y = 'Left y
+  type 'Left x <*> 'Right _ = 'Left x
 
 instance (PApplicative g, PApplicative h) => PApplicative (Compose g h) where
   type Pure a = 'Compose (Pure (Pure a))
@@ -115,7 +114,7 @@ data ApSym1 :: f (a ~> b) -> f a ~> f b
 type instance Apply (ApSym1 x) y = x <*> y
 
 instance PApplicative Proxy where
-  type Pure a = 'Proxy
+  type Pure _ = 'Proxy
   type 'Proxy <*> 'Proxy = 'Proxy
 
 instance PApplicative (Tagged z) where

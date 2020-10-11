@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -34,9 +33,9 @@ class PContravariant f => PDivisible (f :: Type -> Type) where
 
 instance PDivisible Proxy where
   type Conquer = 'Proxy
-  type Divide abc 'Proxy 'Proxy = 'Proxy
+  type Divide _ 'Proxy 'Proxy = 'Proxy
 
 instance PMonoid z => PDivisible (Const z) where
   type Conquer = 'Const Mempty
-  type Divide abc ('Const e) ('Const e1) = 'Const (e <> e1)
+  type Divide _ ('Const e) ('Const e1) = 'Const (e <> e1)
 

@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -407,8 +406,8 @@ ts10 () = ()
 
 -- problem with If is that stuff gets evaluated before you pass stuff to If
 type family UnBool b t f where
-  UnBool 'True t f = t @@ '()
-  UnBool 'False t f = f @@ '()
+  UnBool 'True t _ = t @@ '()
+  UnBool 'False _ f = f @@ '()
 
 -- cant create a lazy thunk from a strict value: it has to be unprocessed in advance
 -- KSym1 (Loop '()) will not work cos it evaluates the loop immediately
@@ -420,7 +419,7 @@ type family Test2 f b where
   Test2 f b = Test3 f (b <=? 0)
 
 type family Test3 f t where
-  Test3 f 'True = '()
+  Test3 _ 'True = '()
   Test3 f 'False = f @@ '()
 
 -- loop but it never gets called

@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -43,7 +42,7 @@ instance PFunctorWithIndex Maybe where
   type Imap f x = (f @@ '()) <$> x
 
 instance PFunctorWithIndex Proxy where
-  type Imap f 'Proxy = 'Proxy
+  type Imap _ 'Proxy = 'Proxy
 
 instance PFunctorWithIndex (Tagged s) where
   type Imap f ('Tagged a) = 'Tagged (f @@ '() @@ a)

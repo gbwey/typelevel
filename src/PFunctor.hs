@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -46,7 +45,7 @@ class PFunctor (f :: Type -> Type) where
 
 
 instance PFunctor [] where
-  type Fmap f '[] = '[]
+  type Fmap _ '[] = '[]
   type Fmap f (x ': xs) = f @@ x ': Fmap f xs
 
 -- leverage the fact that you know how to Fmap xs ie calls the above
@@ -54,24 +53,24 @@ instance PFunctor NonEmpty where
   type Fmap f (x ':| xs) = f @@ x ':| Fmap f xs
 
 instance PFunctor Maybe where
-  type Fmap f 'Nothing = 'Nothing
+  type Fmap _ 'Nothing = 'Nothing
   type Fmap f ('Just x) = 'Just (f @@ x)
 
 instance PFunctor (Either e) where
-  type Fmap f ('Left x) = 'Left x
+  type Fmap _ ('Left x) = 'Left x
   type Fmap f ('Right x) = 'Right (f @@ x)
 
 instance PFunctor ((,) z)  where
   type Fmap f '(e, a) = '(e, f @@ a)
 
 instance PFunctor Proxy where
-  type Fmap f 'Proxy = 'Proxy
+  type Fmap _ 'Proxy = 'Proxy
 
 instance PFunctor (Tagged z) where
   type Fmap f ('Tagged a) = 'Tagged (f @@ a)
 
 instance PFunctor (Const z) where
-  type Fmap f ('Const e) = 'Const e
+  type Fmap _ ('Const e) = 'Const e
 
 instance PFunctor Identity where
   type Fmap f ('Identity a) = 'Identity (f @@ a)
@@ -106,7 +105,7 @@ instance PFunctor SG.Last where
 
 -- make sure that 'x' is different from 'a' and 'b'
 instance PFunctor (These x) where
-  type Fmap f ('This a) = 'This a
+  type Fmap _ ('This a) = 'This a
   type Fmap f ('That b) = 'That (f @@ b)
   type Fmap f ('These a b) = 'These a (f @@ b)
 

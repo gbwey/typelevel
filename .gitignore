@@ -1,1 +1,7 @@
 .stack-work/
+*~
+.stack-work-profile/
+.ghc.environment.x86_64-mingw32*
+dist-newstyle/
+.hie/
+stack*.yaml.lock

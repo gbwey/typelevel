@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -62,7 +61,7 @@ class PApplicative m => PMonad (m :: Type -> Type) where
 
 
 instance PSemigroup e => PMonad (These e) where
-  type 'This x >>= amb = 'This x
+  type 'This x >>= _ = 'This x
   type 'That a >>= amb = amb @@ a
   type 'These x a >>= amb = 'This x <> amb @@ a
 
@@ -70,26 +69,26 @@ instance PMonad Identity where
   type 'Identity a >>= amb = amb @@ a
 
 instance PMonad Proxy where
-  type 'Proxy >>= amb = 'Proxy
+  type 'Proxy >>= _ = 'Proxy
 
 instance PMonad (Tagged z) where
   type 'Tagged a >>= amb = amb @@ a
 
 -- parens are important
 instance PMonad [] where
-  type '[] >>= amb = '[]
+  type '[] >>= _ = '[]
   type (a ': as) >>= amb = (amb @@ a) <> (as >>= amb)
 
 instance PMonad ZipList where
-  type 'ZipList '[] >>= amb = 'ZipList '[]
+  type 'ZipList '[] >>= _ = 'ZipList '[]
   type 'ZipList (a ': as) >>= amb = (amb @@ a) <> ('ZipList as >>= amb)
 
 instance PMonad Maybe where
-  type 'Nothing >>= amb = 'Nothing
+  type 'Nothing >>= _ = 'Nothing
   type 'Just a >>= amb = amb @@ a
 
 instance PMonoid e => PMonad (Either e) where
-  type 'Left x >>= amb = 'Left x
+  type 'Left x >>= _ = 'Left x
   type 'Right a >>= amb = amb @@ a
 
 instance PMonoid e => PMonad ((,) e) where

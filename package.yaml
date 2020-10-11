@@ -21,8 +21,16 @@ dependencies:
 - profunctors
 
 library:
-  source-dirs: src
-  ghc-options: []
+  source-dirs:
+  - src
+  ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wpartial-fields
+  - -Wunused-type-patterns
+
   when:
      condition: impl(ghc >= 8.8)
      ghc-options:
@@ -35,9 +43,14 @@ tests:
     source-dirs:         test
     ghc-options:
     - -threaded
-    - -fomit-interface-pragmas
     - -rtsopts
     - -with-rtsopts=-N
+    - -Wall
+    - -Wcompat
+    - -Wincomplete-record-updates
+    - -Wincomplete-uni-patterns
+    - -Wpartial-fields
+    - -Wunused-type-patterns
     when:
        condition: impl(ghc >= 8.8)
        ghc-options:

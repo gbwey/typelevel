@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -65,17 +64,17 @@ data LengthSym0 :: t a ~> Nat
 type instance Apply LengthSym0 x = Length x
 
 instance PFoldable ((,) z) where
-  type FoldMap f '(e,a) = f @@ a
+  type FoldMap f '(_,a) = f @@ a
 
 instance PFoldable [] where
-  type FoldMap f '[] = Mempty
+  type FoldMap _ '[] = Mempty
   type FoldMap f (x ': xs) = f @@ x <> FoldMap f xs
 
 instance PFoldable NonEmpty where
   type FoldMap f (x ':| xs) = f @@ x <> FoldMap f xs
 
 instance PFoldable Proxy where
-  type FoldMap f 'Proxy = Mempty
+  type FoldMap _ 'Proxy = Mempty
 
 instance PFoldable (Tagged z) where
   type FoldMap f ('Tagged a) = f @@ a
@@ -93,7 +92,7 @@ instance PFoldable (Either z) where
   type FoldMap f x = Either' Mempty f x
 
 instance PFoldable (Const z) where
-  type FoldMap f ('Const e) = Mempty
+  type FoldMap _ ('Const _) = Mempty
 
 instance PFoldable Identity where
   type FoldMap f ('Identity a) = f @@ a
@@ -102,12 +101,12 @@ instance (PFoldable g, PFoldable h) => PFoldable (Compose g h) where
   type FoldMap f ('Compose fg) = FoldMap (FoldMapSym1 f) fg
 
 instance PFoldable (SG.Arg e) where
-  type FoldMap am ('SG.Arg x a) = am @@ a
+  type FoldMap am ('SG.Arg _ a) = am @@ a
 
 instance PFoldable (These e) where
-  type FoldMap am ('This x) = Mempty
+  type FoldMap _ ('This _) = Mempty
   type FoldMap am ('That a) = am @@ a
-  type FoldMap am ('These x a) = am @@ a
+  type FoldMap am ('These _ a) = am @@ a
 
 type family Elem (x :: a) (ta :: t a) :: Bool where
   Elem a as = SUnWrap (FoldMap (SAnySym0 :.: EQSym1 a) as)

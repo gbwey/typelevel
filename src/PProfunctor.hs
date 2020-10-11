@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -71,7 +70,7 @@ instance PProfunctor R where
   type Dimap f g ('R ea) = 'R (g :.: ea :.: f)
 
 instance PProfunctor Tagged where
-  type Dimap f g ('Tagged a) = 'Tagged (g @@ a)
+  type Dimap _ g ('Tagged a) = 'Tagged (g @@ a)
 
 class PProfunctor p => PChoice p  where
   type family Left' (h :: p a b) :: p (Either a c) (Either b c)
@@ -102,7 +101,7 @@ instance PStrong R where
   type First' ('R ea) = 'R (FirstSym1 ea)
 
 instance PStrong Tagged where
-  type First' ('Tagged b) = 'Tagged Undefined
+  type First' ('Tagged _) = 'Tagged Undefined
 
 newtype RR e a = RR { unRR :: e -> a }
 

@@ -1,4 +1,3 @@
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -49,9 +48,9 @@ class PEnum a where
          (EnumFromTo x z)
 
 type family EnumFromThenToImpl (b :: Bool) (df :: Nat) (xs :: [a]) :: [a] where
-  EnumFromThenToImpl 'True df '[] = '[]
+  EnumFromThenToImpl 'True _ '[] = '[]
   EnumFromThenToImpl 'True df (a ': as) = a ': EnumFromThenToImpl 'True df (DropUnsafe df as)
-  EnumFromThenToImpl 'False df xs = TypeError ('Text "iterator has to be greater than x")
+  EnumFromThenToImpl 'False _ _ = TypeError ('Text "iterator has to be greater than x")
 
 instance PEnum Nat where
   type ToEnum n = n
@@ -68,7 +67,7 @@ instance PEnum () where
 
 -- have to handle the special case of only 1 element cos no next element
 --  type EnumFromTo '() '() = '[ '() ]
-  type EnumFromThenTo x y z = TypeError ('Text "EnumFromThenTo (): is invalid cos no successor")
+  type EnumFromThenTo _ _ _ = TypeError ('Text "EnumFromThenTo (): is invalid cos no successor")
 
 instance PEnum Bool where
   type ToEnum n = Case n '[ '(0, 'False), '(1, 'True) ] (TypeError ('Text "ToEnum Bool: only 0 or 1 is valid found n=" ':<>: 'ShowType n))

@@ -1,5 +1,4 @@
 -- type level parser on strings treating strings of length one as a character
-{-# OPTIONS -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -48,7 +47,7 @@ data PSymSym0 :: (a ~> Bool) ~> PP [a] a
 type instance Apply PSymSym0 x = PSym x
 
 type family PSym' (arg :: a ~> Bool) (st :: s) :: Either [Symbol] (a, [a]) where
-  PSym' p '[] = 'Left '["PSym: no data found"]
+  PSym' _ '[] = 'Left '["PSym: no data found"]
   PSym' p (a ': as) = If (p @@ a) ('Right '(a,as)) ('Left '["PSym: no match"])
 
 data PSym'Sym0 :: (a ~> Bool) ~> s ~> Either [Symbol] (a, [a])
@@ -151,7 +150,7 @@ type family Eof where
 
 data Eof' :: [a] ~> Either [Symbol] ((), [a])
 type instance Apply Eof' '[] = 'Right '( '(), '[] )
-type instance Apply Eof' (a ': as) = 'Left '["Eof: expected eof"]
+type instance Apply Eof' (_ ': _) = 'Left '["Eof: expected eof"]
 
 type family CapitalWord where
   CapitalWord = (MconcatSym0 :..: TyCon2Sym1 '(:))
@@ -178,7 +177,7 @@ type family CapitalWord2 where
 
 -- always succeeds: if you want Some then do one then TakeWhileP
 type family TakeWhileP (p :: a ~> Bool) (xs :: [a]) :: ([a], [a]) where
-  TakeWhileP p '[] = '( '[], '[] )
+  TakeWhileP _ '[] = '( '[], '[] )
   TakeWhileP p (a ': as) = If (p @@ a) ('( '[a], '[] ) <> TakeWhileP p as) '( '[], a ': as )
 
 data TakeWhilePSym0 :: (a ~> Bool) ~> [a] ~> ([a], [a])
@@ -189,7 +188,7 @@ type instance Apply (TakeWhilePSym1 x) y = TakeWhileP x y
 
 
 type family TakeWhile1P (p :: a ~> Bool) (xs :: [a]) :: Either [Symbol] ([a], [a]) where
-  TakeWhile1P p '[] = 'Left '["TakeWhile1P: no data"]
+  TakeWhile1P _ '[] = 'Left '["TakeWhile1P: no data"]
   TakeWhile1P p (a ': as) =
     If (p @@ a)
        ('Right ('( '[a], '[] ) <> TakeWhileP p as))
@@ -220,8 +219,8 @@ data ManyP'Sym1 :: ([a] ~> Either [Symbol] (a, [a])) -> [a] ~> Either [Symbol] (
 type instance Apply (ManyP'Sym1 p) as = ManyP' p (p @@ as) as -- Either' (p @@ a) 'Right '( '[], '[])
 
 type family ManyP' (p :: [a] ~> Either [Symbol] (a, [a])) (lr :: Either [Symbol] (a, [a])) (as :: [a]) :: Either [Symbol] ([a], [a]) where
-  ManyP' p ('Left e) as0 = 'Right '( '[], as0 )
-  ManyP' p ('Right '(a, as)) as0 = FirstSym1 (ConsSym1 a) <$> ManyP' p (p @@ as) as
+  ManyP' _ ('Left _) as0 = 'Right '( '[], as0 )
+  ManyP' p ('Right '(a, as)) _ = FirstSym1 (ConsSym1 a) <$> ManyP' p (p @@ as) as
 
 type family SomeP (p :: PP [a] a) :: PP [a] [a] where
   SomeP ('STLR p) = ConsSym0 <$> 'STLR p <*> 'STLR (ManyP'Sym1 p)
@@ -262,7 +261,7 @@ type family Negate (x :: Int') :: Int' where
   Negate ('Int' b n) = 'Int' (Not b) n
 
 type family Abs (x :: Int') :: Int' where
-  Abs ('Int' b n) = 'Int' 'True n
+  Abs ('Int' _ n) = 'Int' 'True n
 
 type family IntSign afa s where
   IntSign afa ('Int' b n) = FlipSym2 (TyCon2Sym1 'Int') n <$> (afa @@ b)
@@ -309,7 +308,7 @@ instance POrd Int' where
   type LessThanOrEqual ('Int' 'True n) ('Int' 'True n1) = LessThanOrEqual n n1
   type LessThanOrEqual ('Int' 'False n) ('Int' 'False n1) = LessThanOrEqual n1 n
   type LessThanOrEqual ('Int' 'True n) ('Int' 'False n1) = n == 0 && n1 == 0
-  type LessThanOrEqual ('Int' 'False n) ('Int' 'True n1) = 'True
+  type LessThanOrEqual ('Int' 'False _) ('Int' 'True _) = 'True
 
 instance PEnum Int' where
   type ToEnum n = 'Int' 'True n
