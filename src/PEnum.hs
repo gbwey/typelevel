@@ -9,9 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PEnum where
 import GHC.TypeNats
 import GHC.TypeLits hiding (natVal,natVal')
@@ -94,7 +94,7 @@ instance PEnum Ordering where
   type EPred 'EQ = 'LT
   type EPred 'GT = 'EQ
 
-instance PEnum a => PEnum (Identity a) where
+instance PEnum (Identity a) where
   type ToEnum n = 'Identity (ToEnum n)
   type FromEnum ('Identity n) = FromEnum n
   type ESucc ('Identity n) = 'Identity (ESucc n)

@@ -9,9 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module POrd where
 import GHC.TypeNats
 import GHC.TypeLits hiding (natVal,natVal')
@@ -151,29 +151,29 @@ instance POrd () where
 instance POrd Void where
   type LessThanOrEqual _ _ = 'True
 
-instance POrd a => POrd (SG.Option a) where
+instance POrd (SG.Option a) where
   type LessThanOrEqual ('SG.Option x) ('SG.Option y) = LessThanOrEqual x y
 
-instance POrd a => POrd (Tagged s a) where
+instance POrd (Tagged s a) where
   type LessThanOrEqual ('Tagged x) ('Tagged y) = LessThanOrEqual x y
 
 -- Arg and Down are the exceptions
 -- Ordering only on First arg!
-instance POrd s => POrd (SG.Arg s a) where
+instance POrd (SG.Arg s a) where
   type LessThanOrEqual ('SG.Arg x _) ('SG.Arg x1 _) = LessThanOrEqual x x1
   -- fixed: uses PEq: need to override else will use equality which is different
 --  type Compare ('SG.Arg x y) ('SG.Arg x1 y1) = Compare x x1
 
 -- flip ordering but not on semigroup
-instance POrd z => POrd (Down z) where
+instance POrd (Down z) where
   type LessThanOrEqual ('Down a) ('Down a1) = LessThanOrEqual a1 a
 
-instance POrd a => POrd (Maybe a) where
+instance POrd (Maybe a) where
   type LessThanOrEqual 'Nothing _ = 'True
   type LessThanOrEqual ('Just _) 'Nothing = 'False
   type LessThanOrEqual ('Just x) ('Just y) = LessThanOrEqual x y
 
-instance (POrd a, POrd b) => POrd (Either a b) where
+instance POrd (Either a b) where
   type LessThanOrEqual ('Left x) ('Left y) = LessThanOrEqual x y
   type LessThanOrEqual ('Left _) ('Right _) = 'True
 
@@ -187,19 +187,19 @@ instance POrd Symbol where
 instance POrd (Proxy a) where
   type LessThanOrEqual 'Proxy 'Proxy = 'True
 
-instance POrd x => POrd [x] where
+instance POrd [x] where
   type LessThanOrEqual '[] '[] = 'True
   type LessThanOrEqual '[] (_ ': _) = 'True
   type LessThanOrEqual (_ ': _) '[] = 'False
   type LessThanOrEqual (a ': as) (b : bs) = If (a === b) (LessThanOrEqual as bs) (LessThanOrEqual a b)
 
-instance POrd z => POrd (ZipList z) where
+instance POrd (ZipList z) where
   type LessThanOrEqual ('ZipList as) ('ZipList bs) = LessThanOrEqual as bs
 
-instance POrd z => POrd (NonEmpty z) where
+instance POrd (NonEmpty z) where
   type LessThanOrEqual (a ':| as) (b ':| bs) = LessThanOrEqual (a ': as) (b ': bs)
 
-instance (POrd x, POrd y) => POrd (These x y) where
+instance POrd (These x y) where
   type LessThanOrEqual ('This a) ('This a1) = LessThanOrEqual a a1
   type LessThanOrEqual ('This _) ('That _) = 'True
   type LessThanOrEqual ('This _) ('These _ _) = 'True
@@ -213,29 +213,29 @@ instance (POrd x, POrd y) => POrd (These x y) where
   type LessThanOrEqual ('These _ _) ('That _) = 'False
 
 -- dont flip: only on semigroup
-instance POrd z => POrd (SG.Dual z) where
+instance POrd (SG.Dual z) where
   type LessThanOrEqual ('SG.Dual a) ('SG.Dual a1) = LessThanOrEqual a a1
 
-instance POrd z => POrd (SG.Sum z) where
+instance POrd (SG.Sum z) where
   type LessThanOrEqual ('SG.Sum a) ('SG.Sum a1) = LessThanOrEqual a a1
 
-instance POrd z => POrd (SG.Min z) where
+instance POrd (SG.Min z) where
   type LessThanOrEqual ('SG.Min a) ('SG.Min a1) = LessThanOrEqual a a1
 
-instance POrd z => POrd (SG.Max z) where
+instance POrd (SG.Max z) where
   type LessThanOrEqual ('SG.Max a) ('SG.Max a1) = LessThanOrEqual a a1
 
-instance POrd z => POrd (SG.Last z) where
+instance POrd (SG.Last z) where
   type LessThanOrEqual ('SG.Last a) ('SG.Last a1) = LessThanOrEqual a a1
 
-instance POrd z => POrd (SG.First z) where
+instance POrd (SG.First z) where
   type LessThanOrEqual ('SG.First a) ('SG.First a1) = LessThanOrEqual a a1
 
 
-instance POrd z => POrd (MM.Last z) where
+instance POrd (MM.Last z) where
   type LessThanOrEqual ('MM.Last a) ('MM.Last a1) = LessThanOrEqual a a1
 
-instance POrd z => POrd (MM.First z) where
+instance POrd (MM.First z) where
   type LessThanOrEqual ('MM.First a) ('MM.First a1) = LessThanOrEqual a a1
 
 instance POrd MM.All where
@@ -244,17 +244,17 @@ instance POrd MM.All where
 instance POrd MM.Any where
   type LessThanOrEqual ('MM.Any a) ('MM.Any a1) = LessThanOrEqual a a1
 
-instance POrd z => POrd (Identity z) where
+instance POrd (Identity z) where
   type LessThanOrEqual ('Identity a) ('Identity a1) = LessThanOrEqual a a1
 
-instance (POrd z1, POrd z2) => POrd (z1, z2) where
+instance POrd (z1, z2) where
   type LessThanOrEqual '(a, b) '(a1, b1) = If (a === a1) 'True (LessThanOrEqual b b1)
 
-instance (POrd z1, POrd z2, POrd z3) => POrd (z1, z2, z3) where
+instance POrd (z1, z2, z3) where
   type LessThanOrEqual '(a, b, c) '(a1, b1, c1) =
      If (a === a1) 'True (If (b === b1) 'True (LessThanOrEqual c c1))
 
-instance (POrd z1, POrd z2, POrd z3, POrd z4) => POrd (z1, z2, z3, z4) where
+instance POrd (z1, z2, z3, z4) where
   type LessThanOrEqual '(a, b, c, d) '(a1, b1, c1, d1) =
      If (a === a1) 'True (If (b === b1) 'True (If (c === c1) 'True (LessThanOrEqual d d1)))
 

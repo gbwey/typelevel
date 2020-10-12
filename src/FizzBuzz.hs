@@ -10,18 +10,17 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module FizzBuzz where
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal, natVal')
+import GHC.TypeNats ( Nat, Mod )
+import GHC.TypeLits ( KnownSymbol, Symbol, symbolVal )
 import PCore
-import Data.Type.Equality
-import PChar
+import Data.Type.Equality ( type (==) )
+import PChar ( NatToString )
 import PSemigroup
-import Data.Proxy
-import PFoldable
+import Data.Proxy ( Proxy(Proxy) )
 
 type family Fizz (n :: Nat) :: Maybe Symbol where
   Fizz n = If (n `Mod` 3 == 0) ('Just "Fizz") 'Nothing
@@ -60,7 +59,7 @@ it :: String
 it :: String
 -}
 
-t3 :: forall (ns :: [Nat]) ss . (ss ~ Map FizzBuzzSym0 ns, GetStrings ss, FoldMap KnownSymbolSym0 ss) => [String]
+t3 :: forall (ns :: [Nat]) ss . (ss ~ Map FizzBuzzSym0 ns, GetStrings ss) => [String]
 t3 = getStrings @ss
 
 {-

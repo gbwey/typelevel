@@ -9,10 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
-
+{-# LANGUAGE NoStarIsType #-}
 module PR where
 import PCore
 import PMonoid
@@ -67,10 +66,10 @@ instance PFunctor (R e) where
 instance PMonad (R e) where
   type 'R ea >>= amb = 'R (RBindSym2 ea (UnR (Fmap UnRSym0 ('R amb))))
 
-instance PMonoid a => PMonoid (R e a) where
+instance PMonoid (R e a) where
   type Mempty = 'R Mempty
 
-instance PSemigroup a => PSemigroup (R e a) where
+instance PSemigroup (R e a) where
   type 'R ea <> 'R ea1 = 'R (ea <> ea1)
   type SUnWrap ('R ea) = ea
 

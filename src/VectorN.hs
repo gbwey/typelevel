@@ -13,11 +13,11 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE NoStarIsType #-}
 module VectorN where
 import qualified Data.Type.Equality as DTE
 import Data.Proxy
@@ -45,7 +45,7 @@ import PN
 type family Vec' (n :: Nat) a where
   Vec' n a = Vec (ToN n) a
 
-instance (Applicative (Vec n), VPure n, Num a) => Num (Vec n a) where
+instance (Applicative (Vec n), Num a) => Num (Vec n a) where
   (+) = liftA2 (+)
   (-) = liftA2 (-)
   (*) = liftA2 (*)
@@ -234,13 +234,13 @@ instance (VIndN is a, VInd i ('S n))
 vindN' :: forall is a . VIndN (ToNs is) a => a -> Rewrite a (ToNs is)
 vindN' = vindN @(ToNs is)
 
-vmatrixOLD :: forall m n o a . (Num a, Gen m, GenS o, VTrans m n, Foldable (Vec n), Foldable (Vec m), Foldable (Vec o), VTrans n o, KnownNat (ToNat m), KnownNat (ToNat o))
+vmatrixOLD :: forall m n o a . (Num a, Gen m, GenS o, VTrans n o, KnownNat (ToNat m))
     => Vec m (Vec n a) -> Vec n (Vec o a) -> Vec m (Vec o a)
 vmatrixOLD vs ws =
   mkMat @m @o (concat [ [a `vdot` b | a <- toList vs] | b <- toList (vtrans ws)])
 
 -- matrix multiplication works and preserves types
-vmatrix :: forall m n o a . (Num a, VTrans n o, Foldable (Vec n))
+vmatrix :: forall m n o a . (Num a, VTrans n o)
     => Vec m (Vec n a) -> Vec n (Vec o a) -> Vec m (Vec o a)
 vmatrix vs ws = vnest vdot vs (vtrans ws)
 
@@ -253,7 +253,7 @@ m1 = mkMat [3..] -- use genn' cos type safe
 m2 :: Mat 5 2 Int
 m2 = mkMat [7..]
 
-vdot :: (Foldable (Vec n), Num a) => Vec n a -> Vec n a -> a
+vdot :: Num a => Vec n a -> Vec n a -> a
 vdot = (sum .) . vzip (*)
 
 class VPure n where
@@ -278,7 +278,7 @@ instance VTrans m n => VTrans m ('S n) where
 vsing :: a -> Vec ('S 'Z) a
 vsing a = VS a VZ
 
-showMat :: forall m n a . (NToInts (Dim (Vec m (Vec n a))), Foldable (Vec m), Foldable (Vec n), Show a, Show (Vec m (Vec n a)), KnownNat (ToNat m), KnownNat (ToNat n))
+showMat :: forall m n a . (NToInts (Dim (Vec m (Vec n a))), Show a)
    => Vec m (Vec n a) -> String
 showMat mat = "@" ++ show (dimsP (toproxy mat)) ++ "\n" ++ intercalate "\n" (map (show . toList) (toList mat))
 
@@ -353,14 +353,14 @@ gens' :: forall n a . GenS (ToN n) => ST [a](Vec (ToN n) a)
 gens' = gens
 
 -- use genn' for any dimensions
-mkMat' :: forall m n a . (Gen (ToN m), GenS (ToN n), KnownNat m, KnownNat n)
+mkMat' :: forall m n a . (Gen (ToN m), GenS (ToN n), KnownNat m)
    => [a] -> Vec (ToN m) (Vec (ToN n) a)
 mkMat' as =
   let m = fromIntegral $ natVal (Proxy @m)
   in gen' @m $ fst $ unST (replicateM m (gens' @n)) as
 
 -- use genn' for any dimensions
-mkMat :: forall m n a . (Gen m, GenS n, KnownNat (ToNat m), KnownNat (ToNat n))
+mkMat :: forall m n a . (Gen m, GenS n, KnownNat (ToNat m))
    => [a] -> Vec m (Vec n a)
 mkMat as =
   let m = nat @m
@@ -508,7 +508,14 @@ class VLens (is :: [N]) (ns :: [N]) a where
   vlensN1 :: VLen ns ~ VLen is => UnDim ns a -> Lens' (UnDimZ is ns a) a
 instance VLens '[] ns a where
   vlensN = id
-  vlensN1 _ = id
+--  vlensN1 _ = id
+  {-
+  Redundant constraint: Functor f
+• In the type signature for:
+       vlensN1 :: UnDim ns a -> Lens' (UnDimZ '[] ns a) a
+  In the instance declaration for ‘VLens '[] ns a
+  -}
+  vlensN1 _ afa a = fmap id (afa a)  -- to avoid Functor redundant constraint
 instance (GU i n (UnDimZ is ns a), VLens is ns a) => VLens (i ': is) (n ': ns) a where
   vlensN = vlens @i @n . vlensN @is @ns
   vlensN1 _ = vlens @i @n . vlensN @is @ns
@@ -563,7 +570,7 @@ showv3 v  =
   let ns = getNToInts @ns
   in show ns ++ vshow3 @ns @a v
 
-pr :: (VShow3 (DimNS v) (DimA v), NToInts (DimNS v), Show v,
+pr :: (VShow3 (DimNS v) (DimA v), NToInts (DimNS v),
       Show (DimA v), UnDim (DimNS v) (DimA v) ~ v) =>
      v -> IO ()
 pr = putStrLn . showv3
@@ -581,13 +588,13 @@ instance VHead' (n2 ': ns) a => VHead' ('S n1 ': n2 ': ns) a where
 -- requires the caller to turn on AllowAmbiguousTypes!
 -- why does this not work and yet below does! cant make 'a' as a return type work
 -- this now works at home but didnt at work! ambiguoustypes?
-headv :: forall ns a v . (DimNS v ~ ns, DimA v ~ a, UnDim ns a ~ v, VHead' ns a) => v -> a
+headv :: forall ns a v . (UnDim ns a ~ v, VHead' ns a) => v -> a
 headv = vhead' @ns @a
 
-headx :: forall ns a v . (DimNS v ~ ns, DimA v ~ a, UnDim ns a ~ v, VHead' ns a) => UnDim ns a -> a
+headx :: forall ns a v . (DimA v ~ a, UnDim ns a ~ v, VHead' ns a) => UnDim ns a -> a
 headx = vhead' @ns @(DimA (UnDim ns a))
 
-headv' :: forall ns a v . (VHead' ns a, Show v, ns ~ DimNS v, v ~ UnDim (DimNS v) (DimA v), a ~ DimA v, NToInts ns, Show a) => v -> String
+headv' :: forall ns a v . (VHead' ns a, ns ~ DimNS v, v ~ UnDim (DimNS v) (DimA v), a ~ DimA v, NToInts ns, Show a) => v -> String
 headv' v  =
   let ns = getNToInts @ns
   in show ns ++ " " ++ show (vhead' @ns @a v)
@@ -596,7 +603,7 @@ type family VRep n a where
   VRep ('S n) a = a ': VRep n a
   VRep 'Z _ = '[]
 
-vheadLens :: forall ns a v . (UnDimZ (VRep (VLen ns) 'Z) ns a ~ v, VLens (VRep (VLen ns) 'Z) ns a, ns ~ DimNS v, v ~ UnDim (DimNS v) (DimA v), a ~ DimA v)
+vheadLens :: forall ns a v . (UnDimZ (VRep (VLen ns) 'Z) ns a ~ v, VLens (VRep (VLen ns) 'Z) ns a)
   => v -> a
 vheadLens v =
   let z = v ^. vlensN @(VRep (VLen ns) 'Z) @ns @a
@@ -634,13 +641,13 @@ class PEq1 (a :: k) where
 instance PEq1 'VZ where
   type 'VZ ==== 'VZ = 'True
 
-instance (PEq1 a, PEq1 v) => PEq1 ('VS a v) where
+instance PEq1 ('VS a v) where
   type 'VS a v ==== 'VS b w = a ==== b && v ==== w
 
 instance PEq1 (Vec 'Z a) where
   type Vec 'Z a ==== Vec 'Z a1 = a ==== a1
 
-instance PEq1 a => PEq1 (Vec ('S n) a) where
+instance PEq1 (Vec ('S n) a) where
   type Vec ('S n) a ==== Vec ('S m) b = n ==== m && a ==== b
 
 instance PEq1 (SG.Arg x y) where
@@ -656,7 +663,7 @@ instance PEq1 Integer
 instance PEq1 Double
 instance PEq1 Nat
 instance PEq1 Char
-instance PEq1 a => PEq1 [a]
+instance PEq1 [a]
 -- oops doesnt scale: we would need an entry for every Nat: lets stick with PEq
 instance PEq1 10
 
@@ -703,11 +710,11 @@ instance PSemigroup (Vec 'Z x) where
   type 'VZ <> 'VZ = 'VZ
   type SUnWrap me = me
 
-instance PSemigroup x => PSemigroup (Vec ('S n) x) where
+instance PSemigroup (Vec ('S n) x) where
   type 'VS a v <> 'VS a1 v1 = 'VS (a <> a1) (v <> v1)
   type SUnWrap ('VS a v) = 'VS (SUnWrap a) (SUnWrap v)
 
-instance PMonoid x => PMonoid (Vec ('S n) x) where
+instance PMonoid (Vec ('S n) x) where
   type Mempty = 'VS Mempty Mempty
 
 data X :: Bool ~> Int

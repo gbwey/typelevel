@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e920ff95c30d3c0b826f11e4015d4b2a0d5167bbd8f4c5dbc37e1b72635eebc0
+-- hash: 397f69bc2711891457f40fb49977615a87034546e5e8d293906668ba90edca53
 
 name:           typelevel
 version:        0.1.0.0
@@ -63,7 +63,7 @@ library
       Paths_typelevel
   hs-source-dirs:
       src
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wunused-type-patterns
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wunused-type-patterns -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
     , constraints
@@ -87,7 +87,7 @@ test-suite typelevel-test
       Paths_typelevel
   hs-source-dirs:
       test
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wunused-type-patterns
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wunused-type-patterns -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
     , constraints

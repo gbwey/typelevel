@@ -9,10 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
-
+{-# LANGUAGE NoStarIsType #-}
 module PTraversableWithIndex where
 import Data.List.NonEmpty (NonEmpty(..))
 import PCore

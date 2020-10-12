@@ -9,9 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PApplicative where
 import Data.Kind (Type)
 import Control.Lens hiding (Cons)
@@ -22,12 +22,12 @@ import PFunctor
 import PSemigroup
 import PMonoid
 import qualified Data.Semigroup as SG
-import Data.These
-import Data.Proxy
-import Data.Tagged
-import Data.Ord
-import Control.Applicative
-import Data.Constraint
+import Data.These ( These(..) )
+import Data.Proxy ( Proxy(..) )
+import Data.Tagged ( Tagged(Tagged) )
+import Data.Ord ( Down(Down) )
+import Control.Applicative ( ZipList(ZipList) )
+import Data.Constraint ( Constraint )
 
 class PFunctor f => PApplicative (f :: Type -> Type) where
   type family Pure (arg :: a) :: f a
@@ -48,7 +48,7 @@ class PFunctor f => PApplicative (f :: Type -> Type) where
   type family LiftA2 (arg :: (a ~> b ~> c)) (arg1 :: f a) (arg2 :: f b) :: f c
   type LiftA2 f as bs = f <$> as <*> bs
 
-instance PSemigroup e => PApplicative (These e) where
+instance PApplicative (These e) where
   type Pure a = 'That a
   type 'This x <*> 'This y = 'This (x <> y)
   type 'This x <*> 'That a = 'These x a
@@ -63,7 +63,7 @@ instance PSemigroup e => PApplicative (These e) where
   type 'These x ab <*> 'That a = 'These x (ab @@ a)
   type 'These x ab <*> 'These y a = 'These (x <> y) (ab @@ a)
 
-instance PMonoid z => PApplicative (Const z) where
+instance PApplicative (Const z) where
   type Pure _ = 'Const Mempty
   type 'Const e <*> 'Const e1 = 'Const (e <> e1)
 
@@ -88,19 +88,19 @@ instance PApplicative Maybe where
 
 
 
-instance PMonoid e => PApplicative (Either e) where
+instance PApplicative (Either e) where
   type Pure a = 'Right a
   type 'Right ab <*> 'Right a  = 'Right (ab @@ a)
   type 'Left x <*> 'Left _ = 'Left x
   type 'Right _ <*> 'Left y = 'Left y
   type 'Left x <*> 'Right _ = 'Left x
 
-instance (PApplicative g, PApplicative h) => PApplicative (Compose g h) where
+instance PApplicative (Compose (g :: Type -> Type) h) where
   type Pure a = 'Compose (Pure (Pure a))
 --  type Pure a = 'Compose ((PureSym0 :.: PureSym0) @@ a) -- this also works
   type 'Compose fgab <*> 'Compose fga = 'Compose (ApSym0 <$> fgab <*> fga)
 
-instance PMonoid e => PApplicative ((,) e) where
+instance PApplicative ((,) e) where
   type Pure a = '(Mempty, a)
   type '(x,ab) <*> '(x1,a) = '(x <> x1, ab @@ a)
 

@@ -9,11 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
-
 module PNum where
 import GHC.TypeNats
 import GHC.TypeLits hiding (natVal,natVal')
@@ -47,49 +45,49 @@ instance PNum Nat where
   type PSub n n1 = Subtract n n1
   type PMult n n1 = n * n1
 
-instance PNum a => PNum (Down a) where
+instance PNum (Down a) where
   type FromInteger n = 'Down (FromInteger n)
   type ToInteger ('Down n) = ToInteger n
   type PAdd ('Down n) ('Down n1) = 'Down (PAdd n n1)
   type PSub ('Down n) ('Down n1) = 'Down (PSub n n1)
   type PMult ('Down n) ('Down n1) = 'Down (PMult n n1)
 
-instance PNum a => PNum (SG.Sum a) where
+instance PNum (SG.Sum a) where
   type FromInteger n = 'SG.Sum (FromInteger n)
   type ToInteger ('SG.Sum n) = ToInteger n
   type PAdd ('SG.Sum n) ('SG.Sum n1) = 'SG.Sum (PAdd n n1)
   type PSub ('SG.Sum n) ('SG.Sum n1) = 'SG.Sum (PSub n n1)
   type PMult ('SG.Sum n) ('SG.Sum n1) = 'SG.Sum (PMult n n1)
 
-instance PNum a => PNum (SG.Product a) where
+instance PNum (SG.Product a) where
   type FromInteger n = 'SG.Product (FromInteger n)
   type ToInteger ('SG.Product n) = ToInteger n
   type PAdd ('SG.Product n) ('SG.Product n1) = 'SG.Product (PAdd n n1)
   type PSub ('SG.Product n) ('SG.Product n1) = 'SG.Product (PSub n n1)
   type PMult ('SG.Product n) ('SG.Product n1) = 'SG.Product (PMult n n1)
 
-instance PNum a => PNum (SG.Min a) where
+instance PNum (SG.Min a) where
   type FromInteger n = 'SG.Min (FromInteger n)
   type ToInteger ('SG.Min n) = ToInteger n
   type PAdd ('SG.Min n) ('SG.Min n1) = 'SG.Min (PAdd n n1)
   type PSub ('SG.Min n) ('SG.Min n1) = 'SG.Min (PSub n n1)
   type PMult ('SG.Min n) ('SG.Min n1) = 'SG.Min (PMult n n1)
 
-instance PNum a => PNum (SG.Max a) where
+instance PNum (SG.Max a) where
   type FromInteger n = 'SG.Max (FromInteger n)
   type ToInteger ('SG.Max n) = ToInteger n
   type PAdd ('SG.Max n) ('SG.Max n1) = 'SG.Max (PAdd n n1)
   type PSub ('SG.Max n) ('SG.Max n1) = 'SG.Max (PSub n n1)
   type PMult ('SG.Max n) ('SG.Max n1) = 'SG.Max (PMult n n1)
 
-instance PNum a => PNum (Identity a) where
+instance PNum (Identity a) where
   type FromInteger n = 'Identity (FromInteger n)
   type ToInteger ('Identity n) = ToInteger n
   type PAdd ('Identity n) ('Identity n1) = 'Identity (PAdd n n1)
   type PSub ('Identity n) ('Identity n1) = 'Identity (PSub n n1)
   type PMult ('Identity n) ('Identity n1) = 'Identity (PMult n n1)
 
-instance PNum b => PNum (Const a b) where
+instance PNum (Const a b) where
   type FromInteger n = 'Const (FromInteger n)
   type ToInteger ('Const n) = ToInteger n
   type PAdd ('Const n) ('Const n1) = 'Const (PAdd n n1)

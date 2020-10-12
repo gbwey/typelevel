@@ -9,9 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PFunctor where
 import Data.Proxy
 import Data.Kind (Type)
@@ -77,7 +77,7 @@ instance PFunctor Identity where
 
 -- careful with the variable names: f has to be different from g and h! cos foralled
 -- FmapSym0 :.: FmapSym0 [this is cool but I like the other one cos dont have to @@ [could create a Fmap2Sym0 etc
-instance (PFunctor g, PFunctor h) => PFunctor (Compose g h) where
+instance PFunctor (Compose (g :: Type -> Type) h) where
   type Fmap f ('Compose fg) = 'Compose (Fmap (FmapSym1 f) fg) -- this was tricky but works
 --  type Fmap f ('Compose fg) = 'Compose ((FmapSym0 :.: FmapSym0) @@ f @@ fg) -- this works as well
 
@@ -135,7 +135,7 @@ instance PFunctor SG.Dual where
 instance PFunctor ZipList where
   type Fmap f ('ZipList as) = 'ZipList (f <$> as)
 
-instance (PFunctor g, PFunctor h) => PFunctor (Product g h) where
+instance PFunctor (Product g h) where
   type Fmap f ('Pair x y) = 'Pair (f <$> x) (f <$> y)
 
 {-

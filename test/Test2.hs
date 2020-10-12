@@ -9,9 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module Test2 where
 import GHC.TypeNats
 import PCombinators
@@ -46,7 +46,7 @@ t151 :: (
       ,View T_2Sym0 '(123,'True) ~ 'True
       ,View (T_2Sym0 :.: T_1Sym0) '("ss",'(123,'True)) ~ 123
       ,View (T_2Sym0 :.: T_2Sym0) '("ss",'(123,'True)) ~ 'True
-      ,View (T_1Sym0 :.: T_2Sym0) '( '("ss", ('Left 1 :: Either Nat ())), '(123,'True)) ~ 'Left 1
+      ,View (T_1Sym0 :.: T_2Sym0) '( '("ss", 'Left 1 :: Either Nat ()), '(123,'True)) ~ 'Left 1
       ,View (T_1Sym0 :.: T_2Sym0) '( '("ss", 'Left 1), '(123,'True)) ~ 'Left 1
       ,View (T_1Sym0 :.: T_2Sym0) '( '("ss", 99), '(123,'True)) ~ 99
       ,Update T_2Sym0 NotSym0 '(123,'True) ~ '(123, 'False)
@@ -391,12 +391,12 @@ ts9 :: ((
 ts9 () = ()
 
 ts10 :: ((
-            ConstraintCartesian '[Show,Read] '[Int,Double] ~ (Show Int, (Show Double, (Read Int, (Read Double, (() :: Constraint)))))
+            ConstraintCartesian '[Show,Read] '[Int,Double] ~ (Show Int, (Show Double, (Read Int, (Read Double, () :: Constraint))))
 --           ,DollarSym0 @@ Show @@ Int ~ Show Int
 --           ,DollarSym1 Show @@ Int ~ Show Int
            ,TyCon1Sym0 @@ Show @@ Int ~ Show Int
            ,TyCon1Sym1 Show @@ Int ~ Show Int
-           ,Mconcat (TyCon1Sym0 <$> '[Show,Read] <*> '[Int,Double]) ~ (Show Int, (Show Double, (Read Int, (Read Double, (() :: Constraint)))))
+           ,Mconcat (TyCon1Sym0 <$> '[Show,Read] <*> '[Int,Double]) ~ (Show Int, (Show Double, (Read Int, (Read Double, () :: Constraint))))
        ) => ()) -> ()
 ts10 () = ()
 

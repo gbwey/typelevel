@@ -9,10 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
-
+{-# LANGUAGE NoStarIsType #-}
 module PFunctorWithIndex where
 import Data.List.NonEmpty (NonEmpty(..))
 import PCore
@@ -22,7 +21,7 @@ import Data.Functor.Compose
 import Data.Proxy
 import Data.Tagged
 import Control.Applicative
-
+import Data.Kind (Type)
 class PFunctor t => PFunctorWithIndex t where
   type family Imap (arg :: FWI (t a) ~> a ~> b) (arg1 :: t a) :: t b
 
@@ -54,7 +53,7 @@ instance PFunctorWithIndex Identity where
   type Imap f ('Identity a) = 'Identity (f @@ '() @@ a)
 
 -- doesnt compose cos 2 functions but only one index: we need i!
-instance (PFunctorWithIndex g, PFunctorWithIndex h) => PFunctorWithIndex (Compose g h) where
+instance PFunctorWithIndex (Compose (g :: Type -> Type) h) where
 --  type Imap f ('Compose fg) = 'Compose (Imap (ImapSym0 :.: (f :..: PairSym0)) fg)
   type Imap f ('Compose fg) = 'Compose (Imap (Imap1Sym1 f) fg)
 

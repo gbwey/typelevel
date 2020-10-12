@@ -9,9 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PMonoid where
 import GHC.TypeLits hiding (natVal,natVal')
 import Data.Constraint
@@ -26,7 +26,7 @@ import Data.Ord
 import Data.Tagged
 import Data.Proxy
 import Control.Applicative
-
+import Data.Kind (Type)
 -- type family == type within class instance
 class PSemigroup a => PMonoid a where
   type family Mempty :: a
@@ -47,16 +47,16 @@ Mconcat '[KnownNat 4, KnownNat 5] :: Constraint
 = (KnownNat 4, (KnownNat 5, () :: Constraint))
 -}
 
-instance PNum a => PMonoid (SG.Sum a) where
+instance PMonoid (SG.Sum a) where
   type Mempty = 'SG.Sum (FromInteger 0)
 
-instance PNum a => PMonoid (SG.Product a) where
+instance PMonoid (SG.Product a) where
   type Mempty = 'SG.Product (FromInteger 1)
 
-instance PMonoid a => PMonoid (SG.Option a) where
+instance PMonoid (SG.Option a) where
   type Mempty = 'SG.Option 'Nothing
 
-instance PMonoid a => PMonoid (Maybe a) where
+instance PMonoid (Maybe a) where
   type Mempty = 'Nothing
 --  type Mappend x y = x <> y
 
@@ -70,10 +70,10 @@ instance PMonoid (MM.Last a) where
 instance PMonoid Ordering where
   type Mempty = 'EQ
 
-instance PNum a => PMonoid (SG.Max a) where
+instance PMonoid (SG.Max a) where
   type Mempty = 'SG.Max (FromInteger 0)
 
-instance PMonoid b => PMonoid (a ~> b) where
+instance PMonoid (a ~> (b :: Type)) where
   type Mempty = KSym1 Mempty
 
 instance PMonoid (EndoX a) where
@@ -89,16 +89,16 @@ instance PMonoid SG.All where
 instance PMonoid SG.Any where
   type Mempty = 'SG.Any 'False
 
-instance (PMonoid a, PMonoid b) => PMonoid (a,b) where
+instance PMonoid (a,b) where
   type Mempty = '(Mempty, Mempty)
 
-instance (PMonoid a, PMonoid b, PMonoid c) => PMonoid (a, b, c) where
+instance PMonoid (a, b, c) where
   type Mempty = '(Mempty, Mempty, Mempty)
 
-instance (PMonoid a, PMonoid b, PMonoid c, PMonoid d) => PMonoid (a, b, c, d) where
+instance PMonoid (a, b, c, d) where
   type Mempty = '(Mempty, Mempty, Mempty, Mempty)
 
-instance PMonoid a => PMonoid (SG.Dual a) where
+instance PMonoid (SG.Dual a) where
   type Mempty = 'SG.Dual Mempty
 
 data MFirstSym0 :: a ~> MM.First a
@@ -113,33 +113,33 @@ instance PMonoid () where
 instance PMonoid Symbol where
   type Mempty = ""
 
-instance PMonoid e => PMonoid (Const e a) where
+instance PMonoid (Const e a) where
   type Mempty = 'Const Mempty
 
-instance PMonoid a => PMonoid (Identity a) where
+instance PMonoid (Identity a) where
   type Mempty = 'Identity Mempty
 
 instance PMonoid (Proxy z) where
   type Mempty = 'Proxy
 
-instance PMonoid s => PMonoid (Tagged s a) where
+instance PMonoid (Tagged s a) where
   type Mempty = 'Tagged Mempty
 
 -- there is no instance for monoid or semigroup
 --instance PMonoid (ZipList a) where
 --  type Mempty = 'ZipList Mempty
 
-instance PSemigroup z => PMonoid (ZipList z) where
+instance PMonoid (ZipList z) where
   type Mempty = 'ZipList '[]
 
 
 data MconcatSym0 :: [m] ~> m
 type instance Apply MconcatSym0 x = Mconcat x
 
-instance PMonoid z => PMonoid (Down z) where
+instance PMonoid (Down z) where
   type Mempty = 'Down Mempty
 
 -- ok so it doesnt exist in Monoid but we need it! this stuff is hard enuf as it is...
-instance PMonoid e => PMonoid (Either e a) where
+instance PMonoid (Either e a) where
   type Mempty = 'Left Mempty
 

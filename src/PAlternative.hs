@@ -9,21 +9,21 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PAlternative where
-import GHC.TypeLits
+import GHC.TypeLits ( type (<=?) )
 import Data.Kind (Type)
-import Data.Functor.Compose
+import Data.Functor.Compose ( Compose(Compose) )
 import PCore
 import PFunctor
 import PFoldable
 import PSemigroup
 import PApplicative
 import qualified Data.Semigroup as SG
-import Data.Proxy
-import Control.Applicative
+import Data.Proxy ( Proxy(..) )
+import Control.Applicative ( ZipList(ZipList) )
 
 class PApplicative f => PAlternative (f :: Type -> Type) where
   type family (<|>) (arg :: f a) (arg1 :: f a) :: f a
@@ -65,7 +65,7 @@ instance PAlternative Maybe where
   type 'Just a <|> _ = 'Just a
   type 'Nothing <|> y = y
 
-instance (PAlternative g, PAlternative h) => PAlternative (Compose g h) where
+instance PAlternative (Compose (g :: Type -> Type) h) where
   type Empty = 'Compose (Pure Empty)
   type 'Compose fga <|> 'Compose fga1 = 'Compose (AlternativeSym0 <$> fga <*> fga1)
 

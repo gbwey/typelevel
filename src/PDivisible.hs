@@ -9,9 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PDivisible where
 import Data.Proxy
 import Data.Kind (Type)
@@ -35,7 +35,7 @@ instance PDivisible Proxy where
   type Conquer = 'Proxy
   type Divide _ 'Proxy 'Proxy = 'Proxy
 
-instance PMonoid z => PDivisible (Const z) where
+instance PDivisible (Const z) where
   type Conquer = 'Const Mempty
   type Divide _ ('Const e) ('Const e1) = 'Const (e <> e1)
 

@@ -11,7 +11,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE NoStarIsType #-}

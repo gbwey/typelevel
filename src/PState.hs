@@ -9,10 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
-
+{-# LANGUAGE NoStarIsType #-}
 module PState where
 import PCore
 import PMonoid
@@ -41,11 +40,11 @@ instance PApplicative (STA s) where
 instance PMonad (STA s) where
   type 'STA sas >>= amb = 'STA (UnCurrySym1 Id :.: FirstSym1 (UnSTASym0 :.: amb) :.: sas)
 
-instance PSemigroup a => PSemigroup (STA s a) where
+instance PSemigroup (STA s a) where
   type sa <> sa1 = SAppSym0 <$> sa <*> sa1
   type SUnWrap ('STA x) = x
 
-instance PMonoid a => PMonoid (STA s a) where
+instance PMonoid (STA s a) where
   type Mempty = Pure Mempty
 
 type family Get :: STA s s where

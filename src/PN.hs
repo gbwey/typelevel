@@ -10,10 +10,10 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE NoStarIsType #-}
 module PN where
 import GHC.TypeNats
 import GHC.TypeLits hiding (natVal,natVal')

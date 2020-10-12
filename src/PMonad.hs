@@ -9,9 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PMonad where
 import Data.Kind (Type)
 import Control.Lens hiding (Cons)
@@ -60,7 +60,7 @@ class PApplicative m => PMonad (m :: Type -> Type) where
 
 
 
-instance PSemigroup e => PMonad (These e) where
+instance PMonad (These e) where
   type 'This x >>= _ = 'This x
   type 'That a >>= amb = amb @@ a
   type 'These x a >>= amb = 'This x <> amb @@ a
@@ -87,11 +87,11 @@ instance PMonad Maybe where
   type 'Nothing >>= _ = 'Nothing
   type 'Just a >>= amb = amb @@ a
 
-instance PMonoid e => PMonad (Either e) where
+instance PMonad (Either e) where
   type 'Left x >>= _ = 'Left x
   type 'Right a >>= amb = amb @@ a
 
-instance PMonoid e => PMonad ((,) e) where
+instance PMonad ((,) e) where
   type Return a = '(Mempty, a)
   type '(x,a) >>= amb = First (SAppSym1 x) (amb @@ a)
 

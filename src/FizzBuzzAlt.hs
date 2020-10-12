@@ -9,10 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
-
+{-# LANGUAGE NoStarIsType #-}
 module FizzBuzzAlt where
 import GHC.TypeNats
 import GHC.TypeLits hiding (natVal, natVal')

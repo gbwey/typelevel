@@ -11,10 +11,9 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
-
+{-# LANGUAGE NoStarIsType #-}
 module PCombinators
   (
     module PAlign
@@ -125,11 +124,35 @@ taa1 :: forall (s :: Symbol) (i :: Nat)
       Length (S.ToList s) ~ i
     , KnownSymbol s
     , KnownNat (Length (S.ToList s))
-    , KnownNat i
     )
    => Proxy s -> (String, Natural)
 taa1 p = (symbolVal p, natVal (Proxy @(Length (S.ToList s))))
+{-
+>taa1 @"abcdef" @123 Proxy
 
+<interactive>:73:1: error:
+    • Couldn't match type ‘6’ with ‘123’ arising from a use of ‘taa1’
+    • In the expression: taa1 @"abcdef" @123 Proxy
+      In an equation for ‘it’: it = taa1 @"abcdef" @123 Proxy
+
+>taa1 @"abcdef" @6 Proxy
+("abcdef",6)
+
+>taa1 (Proxy @"abcdef")
+("abcdef",6)
+it :: (String, GHC.Natural.Natural)
+
+>taa2 @"abc" @"cba" Proxy
+("abc","")
+it :: (String, String)
+>taa2 @"abc" @"cbad" Proxy
+
+<interactive>:66:1: error:
+    • Couldn't match type ‘"cba"’ with ‘"cbad"’
+        arising from a use of ‘taa2’
+    • In the expression: taa2 @"abc" @"cbad" Proxy
+      In an equation for ‘it’: it = taa2 @"abc" @"cbad" Proxy
+-}
 taa2 :: forall (s :: Symbol) (s1 :: Symbol) p
    . (
       Mconcat (Reverse (S.ToList s)) ~ s1
@@ -160,6 +183,7 @@ taa3 = natVal
 >taa3 (Proxy @3)
 3
 it :: GHC.Natural.Natural
+
 >taa3 (Proxy @4)
 
 <interactive>:12:1: error:

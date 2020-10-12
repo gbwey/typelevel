@@ -9,17 +9,17 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PAlign where
-import Data.These
+import Data.These ( These(..) )
 import PCore
 import PFunctor
 import PBifunctor
 import PSemigroup
-import Control.Applicative
-import Data.Functor.Product
+import Control.Applicative ( ZipList(ZipList) )
+import Data.Functor.Product ( Product(..) )
 
 class PFunctor f => PAlign f where
   type family Nil :: f a
@@ -65,7 +65,7 @@ instance PAlign ZipList where
   type Nil = 'ZipList '[]
   type AlignWith f ('ZipList as) ('ZipList bs) = 'ZipList (AlignWith f as bs)
 
-instance (PAlign g, PAlign h) => PAlign (Product g h) where
+instance PAlign (Product g h) where
   type Nil = 'Pair Nil Nil
   type AlignWith f ('Pair x y) ('Pair x1 y1) = 'Pair (AlignWith f x x1) (AlignWith f y y1)
 

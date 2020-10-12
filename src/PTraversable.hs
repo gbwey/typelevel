@@ -9,10 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
-
+{-# LANGUAGE NoStarIsType #-}
 module PTraversable where
 import Data.Kind (Type)
 import Data.List.NonEmpty (NonEmpty(..))
@@ -78,7 +77,7 @@ data ComposeSym0 :: f (g a) ~> Compose f g a
 type instance Apply ComposeSym0 x = 'Compose x
 
 -- remember to partially apply ie not 'Compose <$> but instead ComposeSym0 <$>
-instance (PTraversable g, PTraversable h) => PTraversable (Compose g h) where
+instance PTraversable (Compose (g :: Type -> Type) h) where
   type Traverse f ('Compose fg) = ComposeSym0 <$> Traverse (TraverseSym1 f) fg
 
 instance PTraversable (SG.Arg e) where

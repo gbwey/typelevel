@@ -11,9 +11,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PEq where
 import GHC.TypeNats
 import GHC.TypeLits hiding (natVal,natVal')
@@ -80,22 +80,22 @@ instance PEq Bool
 instance PEq ()
 instance PEq Void
 
-instance PEq x => PEq (SG.Option x) where
+instance PEq (SG.Option x) where
   type 'SG.Option a === 'SG.Option b = a === b
 
-instance PEq y => PEq (Tagged x y) where
+instance PEq (Tagged x y) where
   type 'Tagged a === 'Tagged b = a === b
 
-instance PEq z => PEq (Down z) where
+instance PEq (Down z) where
   type 'Down x === 'Down y = x === y
 
-instance PEq a => PEq (Maybe a) where
+instance PEq (Maybe a) where
   type 'Just x === 'Just y = x === y
   type 'Just _ === 'Nothing = 'False
   type 'Nothing === 'Just _ = 'False
   type 'Nothing === 'Nothing = 'True
 
-instance (PEq a, PEq b) => PEq (Either a b) where
+instance PEq (Either a b) where
   type 'Right x === 'Right y = x === y
   type 'Right _ === 'Left _ = 'False
   type 'Left _ === 'Right _ = 'False
@@ -107,19 +107,19 @@ instance PEq Symbol where
 instance PEq (Proxy a) where
   type 'Proxy === 'Proxy = 'True
 
-instance PEq x => PEq [x] where
+instance PEq [x] where
   type '[] === '[] = 'True
   type (a ': as) === (b ': bs) = a === b && as === bs
   type '[] === (_ ': _) = 'False
   type (_ ': _) === '[] = 'False
 
-instance PEq z => PEq (ZipList z) where
+instance PEq (ZipList z) where
   type 'ZipList as === 'ZipList bs = as === bs
 
-instance PEq z => PEq (NonEmpty z) where
+instance PEq (NonEmpty z) where
   type (a ':| as) === (b ':| bs) = a === b && as === bs
 
-instance (PEq x, PEq y) => PEq (These x y) where
+instance PEq (These x y) where
   type 'This a === 'This b = a === b
   type 'This _ === 'That _ = 'False
   type 'This _ === 'These _ _ = 'False
@@ -133,37 +133,37 @@ instance (PEq x, PEq y) => PEq (These x y) where
   type 'These a b === 'These a1 b1 = a === a1 && b === b1
 
 
-instance PEq z => PEq (SG.Dual z) where
+instance PEq (SG.Dual z) where
   type 'SG.Dual a === 'SG.Dual b = a === b
-instance PEq z => PEq (SG.Sum z) where
+instance PEq (SG.Sum z) where
   type 'SG.Sum a === 'SG.Sum b = a === b
-instance PEq z => PEq (SG.Min z) where
+instance PEq (SG.Min z) where
   type 'SG.Min a === 'SG.Min b = a === b
-instance PEq z => PEq (SG.Max z) where
+instance PEq (SG.Max z) where
   type 'SG.Max a === 'SG.Max b = a === b
-instance PEq z => PEq (SG.Last z) where
+instance PEq (SG.Last z) where
   type 'SG.Last a === 'SG.Last b = a === b
-instance PEq z => PEq (SG.First z) where
+instance PEq (SG.First z) where
   type 'SG.First a === 'SG.First b = a === b
-instance PEq z => PEq (MM.Last z) where
+instance PEq (MM.Last z) where
   type 'MM.Last a === 'MM.Last b = a === b
-instance PEq z => PEq (MM.First z) where
+instance PEq (MM.First z) where
   type 'MM.First a === 'MM.First b = a === b
 instance PEq MM.All where
   type 'MM.All b === 'MM.All b1 = b === b1
 instance PEq MM.Any where
   type 'MM.Any b === 'MM.Any b1 = b === b1
-instance PEq z => PEq (Identity z) where
+instance PEq (Identity z) where
   type 'Identity a === 'Identity a1 = a === a1
-instance (PEq z1, PEq z2) => PEq (z1, z2) where
+instance PEq (z1, z2) where
   type '(a,b) === '(a1,b1) = a === a1 && b === b1
-instance (PEq z1, PEq z2, PEq z3) => PEq (z1, z2, z3) where
+instance PEq (z1, z2, z3) where
   type '(a,b,c) === '(a1,b1,c1) = a === a1 && b === b1 && c === c1
-instance (PEq z1, PEq z2, PEq z3, PEq z4) => PEq (z1, z2, z3, z4) where
+instance PEq (z1, z2, z3, z4) where
   type '(a,b,c,d) === '(a1,b1,c1,d1) = a === a1 && b === b1 && c === c1 && d === d1
 instance PEq Int
 
-instance PEq z => PEq (Const z x) where
+instance PEq (Const z x) where
   type 'Const a === 'Const a1 = a === a1
 
 

@@ -9,7 +9,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
 module PFoldableWithIndex where
@@ -23,7 +22,7 @@ import PFoldable
 import Data.Proxy
 import Data.Tagged
 import Control.Applicative
-
+import Data.Kind (Type)
 class PFoldable t => PFoldableWithIndex t where
   type family IfoldMap (arg :: FWI (t a) ~> a ~> m) (arg1 :: t a) :: m
 
@@ -61,7 +60,7 @@ instance PFoldableWithIndex Identity where
 
 -- argggg wont work (i,j) we need to vary the index
 -- not allowed to use IfoldMapSym0 but can use IfoldMapSym1 -- make it work
-instance (PFoldableWithIndex g, PFoldableWithIndex h) => PFoldableWithIndex (Compose g h) where
+instance PFoldableWithIndex (Compose (g :: Type -> Type) h) where
 --  type IfoldMap f ('Compose fg) = IfoldMap (IfoldMapSym0 :.: (f (:.:)) :.: PairSym0) fg
   type IfoldMap f ('Compose fg) = IfoldMap (IfoldMap1Sym1 f) fg
 

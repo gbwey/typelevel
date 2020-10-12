@@ -9,9 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PContravariant where
 import Data.Proxy
 import Data.Kind (Type)
@@ -50,7 +50,7 @@ instance PContravariant (Const z) where
   type Contramap _ ('Const e) = 'Const e
 
 
-instance (PContravariant g, PContravariant h) => PContravariant (Compose g h) where
+instance PContravariant (Compose (g :: Type -> Type) h) where
   type Contramap f ('Compose fg) = 'Compose (Contramap (ContramapSym1 f) fg)
 
 -- more general than Contravariant cos also Functor

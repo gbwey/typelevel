@@ -9,9 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PFoldable where
 import GHC.TypeNats
 import Data.Kind (Type)
@@ -97,7 +97,7 @@ instance PFoldable (Const z) where
 instance PFoldable Identity where
   type FoldMap f ('Identity a) = f @@ a
 
-instance (PFoldable g, PFoldable h) => PFoldable (Compose g h) where
+instance PFoldable (Compose (g :: Type -> Type) h) where
   type FoldMap f ('Compose fg) = FoldMap (FoldMapSym1 f) fg
 
 instance PFoldable (SG.Arg e) where

@@ -9,9 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PStateLR where
 import PCore
 import PBifunctor
@@ -25,11 +25,11 @@ import PR
 
 newtype STLR e s a = STLR { unSTLR :: s ~> Either e (a, s) }
 -- have to wrap and unwrap in R as we dont have Functor for ~> but do for R which wraps ~>
-instance PMonoid e => PFunctor (STLR e s) where
+instance PFunctor (STLR e s) where
   type Fmap f ('STLR sas) = 'STLR (UnR (Fmap (BisecondSym1 (FirstSym1 f)) ('R sas)))
 --  type Fmap f ('STLR sas) = 'STLR $$ UnRSym0 $ Fmap (FirstSym1 f) ('R sas)
 
-instance PMonoid e => PApplicative (STLR e s) where
+instance PApplicative (STLR e s) where
   type Pure a = 'STLR (TyCon1Sym1 'Right :.: TyCon1Sym1 ('(,) a))
   type 'STLR sab <*> 'STLR sa =
     'STLR (STLRAppSym2 sab sa)
@@ -48,7 +48,7 @@ type family STLRApp (lrab :: Either e (a ~> b,s)) (sa :: s ~> Either e (a,s)) ::
   STLRApp ('Left e) _ = 'Left e
   STLRApp ('Right '(ab,s)) sa = Bisecond (FirstSym1 ab) (sa @@ s)
 
-instance PMonoid e => PMonad (STLR e s) where
+instance PMonad (STLR e s) where
   type 'STLR sa >>= amb = 'STLR (STLRBindSym2 sa amb)
 
 data STLRBindSym0 :: (s ~> Either e (a,s)) ~> (a ~> STLR e s b) ~> s ~> Either e (b,s)
@@ -65,11 +65,11 @@ type family STLRBind (lra :: Either e (a,s)) (amb :: a ~> STLR e s b) :: Either 
   STLRBind ('Left e) _ = 'Left e
   STLRBind ('Right '(a,s)) amb = UnSTLR (amb @@ a) @@ s
 
-instance PSemigroup a => PSemigroup (STLR e s a) where
+instance PSemigroup (STLR e s a) where
   type sa <> sa1 = SAppSym0 <$> sa <*> sa1
   type SUnWrap ('STLR x) = x
 
-instance PMonoid a => PMonoid (STLR e s a) where
+instance PMonoid (STLR e s a) where
   type Mempty = Pure Mempty
 
 type family GetP :: STLR e s s where
@@ -105,7 +105,7 @@ data STLRSym0 :: (s ~> Either e (a, s)) ~> STLR e s a
 type instance Apply STLRSym0 sas = 'STLR sas
 
 
-instance PMonoid e => PAlternative (STLR e s) where
+instance PAlternative (STLR e s) where
   type Empty = 'STLR (KSym1 ('Left Mempty))
   type 'STLR p1 <|> 'STLR p2 = 'STLR (STLRAltSym2 p1 p2)
 

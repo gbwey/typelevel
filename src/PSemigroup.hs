@@ -9,9 +9,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module PSemigroup where
 import GHC.TypeNats
 import GHC.TypeLits hiding (natVal,natVal')
@@ -88,7 +88,7 @@ Mconcat '[KnownNat 4, KnownNat 5] :: Constraint
 -}
 
 -- ARGGHHHHH! keep screwing up:dont use 'a' in the type cos appears in the head
-instance PNum a => PSemigroup (SG.Sum a) where
+instance PSemigroup (SG.Sum a) where
   type 'SG.Sum x <> 'SG.Sum y = 'SG.Sum (PAdd x y)
   type SUnWrap ('SG.Sum x) = x
   --type Sconcat ne = FoldrNE MSumSym0 ne
@@ -117,19 +117,19 @@ C:\haskell\vectorn.hs:4448:8: error:
 --  MSum ('SG.Sum x) ('SG.Sum y) = 'SG.Sum (x + y)
 
 
-instance PNum a => PSemigroup (SG.Product a) where
+instance PSemigroup (SG.Product a) where
   type 'SG.Product x <> 'SG.Product y = 'SG.Product (PMult x y)
   type SUnWrap ('SG.Product x) = x
 
 -- it makes no diff if explicit specifying each case or handling this way ie x -- just have to handle all the cases!
-instance PSemigroup a => PSemigroup (SG.Option a) where
+instance PSemigroup (SG.Option a) where
   type 'SG.Option 'Nothing <> x = x
   type x <> 'SG.Option 'Nothing = x
   type 'SG.Option ('Just x) <> 'SG.Option ('Just y) = 'SG.Option ('Just (x <> y))
   type SUnWrap ('SG.Option ('Just x)) = 'Just (SUnWrap x)
   type SUnWrap ('SG.Option 'Nothing) = 'Nothing -- ('Nothing :: Maybe a)
 
-instance PSemigroup a => PSemigroup (Maybe a) where
+instance PSemigroup (Maybe a) where
   type 'Nothing <> y = y
   type x <> 'Nothing = x
   type 'Just x <> 'Just y = 'Just (x <> y)
@@ -171,12 +171,12 @@ instance PSemigroup Ordering where
   type SUnWrap me = me
 
 -- Max has lower bound of 0 cos Natural numbers
-instance PNum a => PSemigroup (SG.Max a) where
+instance PSemigroup (SG.Max a) where
   type 'SG.Max x <> 'SG.Max y = 'SG.Max $$ If (ToInteger x <=? ToInteger y) y x
   type SUnWrap ('SG.Max x) = x
 
 -- unbounded so no Monoid instance
-instance PNum a => PSemigroup (SG.Min a) where
+instance PSemigroup (SG.Min a) where
   type 'SG.Min x <> 'SG.Min y = 'SG.Min $$ If (ToInteger x <=? ToInteger y) x y
   type SUnWrap ('SG.Min x) = x
 
@@ -184,7 +184,7 @@ instance PNum a => PSemigroup (SG.Min a) where
 -- tricky: we only care that Apply works so create the Apply instance
 -- todo: how to unwrap using type family
 -- no matter how i do it i end up with "Illegal type synonym ..."
-instance PSemigroup b => PSemigroup (a ~> b) where
+instance PSemigroup (a ~> b) where
   type x <> y = ABSym0 x y
   type SUnWrap me = me
 --  type SUnWrap me = UnWrapArrowSym1 me
@@ -261,21 +261,21 @@ instance PSemigroup SG.Any where
   type SUnWrap ('SG.Any x) = x
 
 
-instance (PSemigroup a, PSemigroup b) => PSemigroup (a,b) where
+instance PSemigroup (a,b) where
   type '(x, y) <> '(x1, y1) = '(x <> x1, y <> y1)
   type SUnWrap '(x, y) = '(SUnWrap x, SUnWrap y)
 
 
-instance (PSemigroup a, PSemigroup b, PSemigroup c) => PSemigroup (a, b, c) where
+instance PSemigroup (a, b, c) where
   type '(x, y, z) <> '(x1, y1, z1) = '(x <> x1, y <> y1, z <> z1)
   type SUnWrap '(x, y, z) = '(SUnWrap x, SUnWrap y, SUnWrap z)
 
 
-instance (PSemigroup a, PSemigroup b, PSemigroup c, PSemigroup d) => PSemigroup (a, b, c, d) where
+instance PSemigroup (a, b, c, d) where
   type '(x, y, z, w) <> '(x1, y1, z1, w1) = '(x <> x1, y <> y1, z <> z1, w <> w1)
   type SUnWrap '(x, y, z, w) = '(SUnWrap x, SUnWrap y, SUnWrap z, SUnWrap w)
 
-instance PSemigroup a => PSemigroup (SG.Dual a) where
+instance PSemigroup (SG.Dual a) where
   type 'SG.Dual x <> 'SG.Dual y = 'SG.Dual (y <> x)
   type SUnWrap ('SG.Dual x) = SUnWrap x
 
@@ -312,7 +312,7 @@ type instance Apply SAnySym0 x = 'SG.Any x
 
 -- AGAIN make sure you dont use x y else you get weird errors: use a a1 b etc [ie dont use vars from the instance head]
 -- no monoid instance for These and ZipList
-instance (PSemigroup x, PSemigroup y) => PSemigroup (These x y) where
+instance PSemigroup (These x y) where
   type 'This a <> 'This _ = 'This a
   type 'This a <> 'That b = 'These a b
   type 'This a <> 'These a1 b = 'These (a <> a1) b
@@ -369,7 +369,7 @@ instance PSemigroup (Proxy z) where
   type 'Proxy <> 'Proxy = 'Proxy
   type SUnWrap _ = '()
 
-instance PSemigroup s => PSemigroup (Tagged s a) where
+instance PSemigroup (Tagged s a) where
   type 'Tagged a1 <> 'Tagged a2 = 'Tagged (a1 <> a2)
   type SUnWrap ('Tagged a1) = a1
 
@@ -381,7 +381,7 @@ instance PSemigroup s => PSemigroup (Tagged s a) where
 -- there is no semigroup/monoid instance for ziplist but we are creating one
 -- which is different cos it accesses an inner semigroup which makes it useful
 -- from a simple list: a<>b for each element in the zip
-instance PSemigroup z => PSemigroup (ZipList z) where
+instance PSemigroup (ZipList z) where
    type 'ZipList as <> 'ZipList bs = 'ZipList (ZipListAppend as bs)
    type SUnWrap ('ZipList '[]) = '[]
    type SUnWrap ('ZipList (a ': as)) = SUnWrap a ': SUnWrap ('ZipList as)
@@ -391,14 +391,14 @@ type family ZipListAppend as bs where
   ZipListAppend as '[] = as
   ZipListAppend (a ': as) (b ': bs) = (a <> b) ': ZipListAppend as bs
 
-instance PSemigroup z => PSemigroup (Const z z1) where
+instance PSemigroup (Const z z1) where
   type 'Const a <> 'Const b = 'Const (a <> b)
   type SUnWrap ('Const a) = SUnWrap a
 
-instance PSemigroup z => PSemigroup (Identity z) where
+instance PSemigroup (Identity z) where
   type 'Identity a <> 'Identity b = 'Identity (a <> b)
   type SUnWrap ('Identity a) = a
 
-instance PSemigroup z => PSemigroup (Down z) where
+instance PSemigroup (Down z) where
   type 'Down a <> 'Down a1 = 'Down (a <> a1)
   type SUnWrap ('Down e) = e
