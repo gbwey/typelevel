@@ -15,18 +15,18 @@
 module PTraversable where
 import Data.Kind (Type)
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.These
+import Data.These ( These(..) )
 import PCore
 import PFoldable
 import PFunctor
 import PApplicative
-import Data.Functor.Const
-import Data.Functor.Identity
-import Data.Functor.Compose
+import Data.Functor.Const ( Const(Const) )
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Functor.Compose ( Compose(Compose) )
 import qualified Data.Semigroup as SG
-import Data.Tagged
-import Data.Proxy
-import Control.Applicative
+import Data.Tagged ( Tagged(Tagged) )
+import Data.Proxy ( Proxy(..) )
+import Control.Applicative (ZipList(ZipList))
 
 class (PFunctor t, PFoldable t) => PTraversable (t :: Type -> Type) where
   type family Traverse (afb :: a ~> f b) (xs :: t a) :: f (t b)

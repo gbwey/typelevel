@@ -13,24 +13,24 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PSemigroup where
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal')
+import GHC.TypeNats (Nat, type (<=?))
+import GHC.TypeLits(Symbol,TypeError,AppendSymbol,ErrorMessage(ShowType, (:<>:), Text))
 import Data.Kind (Type)
-import Data.Constraint
+import Data.Constraint ( Constraint )
 import qualified Data.Monoid as MM
 import qualified Data.Semigroup as SG
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.These
-import Data.Void
+import Data.These ( These(..) )
+import Data.Void ( Void )
 import PCore
 import PNum
-import Data.Functor.Const
-import Data.Functor.Identity
-import Data.Type.Equality
-import Data.Ord
-import Data.Tagged
-import Data.Proxy
-import Control.Applicative
+import Data.Functor.Const ( Const(Const) )
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Type.Equality ( type (==) )
+import Data.Ord ( Down(Down) )
+import Data.Tagged ( Tagged(Tagged) )
+import Data.Proxy ( Proxy(..) )
+import Control.Applicative ( ZipList(ZipList) )
 
 data SAppSym0 :: a ~> a ~> a
 type instance Apply SAppSym0 x = SAppSym1 x

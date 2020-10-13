@@ -18,11 +18,11 @@ import PContravariant
 import PMonoid
 import PSemigroup
 import PDivisible
-import Data.Functor.Contravariant
-import Data.Functor.Contravariant.Divisible
+import Data.Functor.Contravariant ( Contravariant(contramap) )
+import Data.Functor.Contravariant.Divisible ( Divisible(..) )
 import Data.Kind (Type)
-import Data.Function
-import Control.Arrow
+import Data.Function ( on )
+import Control.Arrow ( Arrow((&&&)) )
 
 newtype ComparisonX a = ComparisonX { getComparisonX :: a ~> a ~> Ordering }
 

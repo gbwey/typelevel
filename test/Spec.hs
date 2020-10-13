@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings, DataKinds, TypeOperators, TypeApplications #-}
 module Main where
 import PCombinators
-import GHC.TypeNats
-import Data.Proxy
-import Test.Tasty
-import Test.Tasty.HUnit
+import GHC.TypeNats ( natVal )
+import Data.Proxy ( Proxy(Proxy) )
+import Test.Tasty ( defaultMain, testGroup )
+import Test.Tasty.HUnit ( testCase, (@?=) )
 
 main :: IO ()
 main = suite

@@ -15,20 +15,20 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PEq where
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal')
+import GHC.TypeNats ( Nat )
+import GHC.TypeLits ( Symbol )
 import Data.Kind (Type)
 import PCore
-import Data.Functor.Identity
-import Data.Ord
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Ord ( Down(Down) )
 import qualified Data.Semigroup as SG
 import qualified Data.Monoid as MM
-import Data.Tagged
-import Data.Proxy
-import Control.Applicative
-import Data.These
+import Data.Tagged ( Tagged(Tagged) )
+import Data.Proxy ( Proxy(..) )
+import Control.Applicative ( ZipList(ZipList), Const(Const) )
+import Data.These ( These(..) )
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.Void
+import Data.Void ( Void )
 import qualified Data.Type.Equality as DTE
 
 class PEq (a :: Type) where

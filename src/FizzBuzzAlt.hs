@@ -13,15 +13,14 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module FizzBuzzAlt where
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal, natVal')
+import GHC.TypeLits ( Nat, Symbol, Mod )
 import PCore
-import Data.Type.Equality
+import Data.Type.Equality ( type (==) )
 import PChar
 import PMonoid
 import PSemigroup
 import PFunctor
-import Data.These
+import Data.These ( These(That, This) )
 
 data Fizz = Fizz
 data Buzz = Buzz

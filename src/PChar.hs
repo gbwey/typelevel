@@ -13,13 +13,13 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PChar where
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal')
+import GHC.TypeNats (type (-), type(+))
+import GHC.TypeLits (Nat,Symbol,TypeError,ErrorMessage(ShowType, (:<>:), Text))
 import PBounded
 import PEq
 import POrd
 import PCore
-import Data.Type.Equality
+import Data.Type.Equality ( type (==) )
 import PEnum
 import PMonoid
 import PSemigroup
@@ -101,7 +101,7 @@ type family UniqueImpl (n :: Nat) (x :: Symbol) (suffix :: Symbol) (xs :: [Symbo
   UniqueImpl n x suffix xs = UniqueImpl_ (ElemList (x <> suffix) xs) n x suffix xs
 
 type family UniqueImpl_ b n x suffix xs where
-  UniqueImpl_ 'True n x _ xs = UniqueImpl (n+1) x ("_" <> FindAt' n CharSetDigit) xs
+  UniqueImpl_ 'True n x _ xs = UniqueImpl (n + 1) x ("_" <> FindAt' n CharSetDigit) xs
   UniqueImpl_ 'False _ x suffix _ = x <> suffix
 
 

@@ -18,9 +18,9 @@ import Data.List.NonEmpty (NonEmpty(..))
 import PCore
 import PSemigroup
 import PFoldable
-import Data.Tagged
-import Data.Functor.Identity
-import Data.Functor.Compose
+import Data.Tagged ( Tagged(Tagged) )
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Functor.Compose ( Compose(Compose) )
 
 -- how to enforce Semigroup?
 class PFoldable t => PFoldable1 (t :: Type -> Type) where

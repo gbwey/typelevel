@@ -15,9 +15,9 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE NoStarIsType #-}
 module PN where
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal')
-import Data.Proxy
+import GHC.TypeNats (type (-), type(+))
+import GHC.TypeLits (Nat, TypeError, ErrorMessage(..),KnownNat, natVal, type (<=?))
+import Data.Proxy ( Proxy(Proxy) )
 import PEnum
 import POrd
 import PNum
@@ -35,7 +35,7 @@ type instance Apply ToNatSym0 a = ToNat a
 
 type family ToN a where
   ToN 0 = 'Z
-  ToN n = 'S (ToN (n-1))
+  ToN n = 'S (ToN (n - 1))
 
 data ToNSym0 :: Nat ~> N
 type instance Apply ToNSym0 a = ToN a

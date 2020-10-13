@@ -13,9 +13,9 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PDivisible where
-import Data.Proxy
+import Data.Proxy ( Proxy(..) )
 import Data.Kind (Type)
-import Data.Functor.Const
+import Data.Functor.Const ( Const(Const) )
 import PCore
 import PContravariant
 import PMonoid

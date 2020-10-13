@@ -16,11 +16,11 @@ module PFunctorWithIndex where
 import Data.List.NonEmpty (NonEmpty(..))
 import PCore
 import PFunctor
-import Data.Functor.Identity
-import Data.Functor.Compose
-import Data.Proxy
-import Data.Tagged
-import Control.Applicative
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Functor.Compose ( Compose(Compose) )
+import Data.Proxy ( Proxy(..) )
+import Data.Tagged ( Tagged(Tagged) )
+import Control.Applicative ( ZipList(ZipList) )
 import Data.Kind (Type)
 class PFunctor t => PFunctorWithIndex t where
   type family Imap (arg :: FWI (t a) ~> a ~> b) (arg1 :: t a) :: t b

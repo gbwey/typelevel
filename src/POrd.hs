@@ -13,20 +13,20 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module POrd where
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal')
+import GHC.TypeNats (Nat, type (<=?))
+import GHC.TypeLits ( Symbol,CmpSymbol,TypeError,ErrorMessage(ShowType, (:<>:), Text))
 import PEq
 import PCore
-import Data.Functor.Identity
-import Data.Ord
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Ord ( Down(Down) )
 import qualified Data.Semigroup as SG
 import qualified Data.Monoid as MM
-import Data.Tagged
-import Data.Proxy
-import Control.Applicative
-import Data.These
+import Data.Tagged ( Tagged(Tagged) )
+import Data.Proxy ( Proxy(..) )
+import Control.Applicative ( ZipList(ZipList) )
+import Data.These ( These(..) )
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.Void
+import Data.Void ( Void )
 
 data CompareSym0 :: a ~> a ~> Ordering
 type instance Apply CompareSym0 x = CompareSym1 x

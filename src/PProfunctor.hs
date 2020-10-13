@@ -17,7 +17,7 @@ import Data.Profunctor
 import PCore
 import PFunctor
 import PBifunctor
-import Data.Tagged
+import Data.Tagged ( Tagged(Tagged) )
 import PR
 
 class PProfunctor p where

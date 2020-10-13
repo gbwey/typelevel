@@ -15,9 +15,9 @@
 module PMap where
 import PCore
 import POrd
-import Data.Type.Equality
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal')
+import Data.Type.Equality ( type (==) )
+import GHC.TypeNats ( Nat, Div, type(+) )
+import GHC.TypeLits (TypeError,ErrorMessage(ShowType, (:<>:), Text))
 
 type family InsertWithKey (f :: k ~> a ~> a ~> a) (x :: k) (y :: a) (kvs :: [(k, a)]) :: [(k, a)] where
   InsertWithKey _ k a '[] = '[ '(k, a) ]
@@ -111,7 +111,7 @@ type family MergeSortOn' (f :: a ~> a ~> Bool) (as :: [a]) (bs :: [a]) :: [a] wh
 type family MergeSortOn (f :: a ~> a ~> Bool) (as :: [a]) :: [a] where
   MergeSortOn _ '[] = '[]
   MergeSortOn _ '[a] = '[a]
-  MergeSortOn f (a ': a1 ': as) = MergeSortOn'' f (SplitAt (Div (Len as+2) 2) (a ': a1 ': as))
+  MergeSortOn f (a ': a1 ': as) = MergeSortOn'' f (SplitAt (Div (Len as + 2) 2) (a ': a1 ': as))
 
 type family MergeSortOn'' (f :: a ~> a ~> Bool) (tps :: ([a], [a])) :: [a] where
   MergeSortOn'' f '(as, bs) = MergeSortOn' f (MergeSortOn f as) (MergeSortOn f bs)

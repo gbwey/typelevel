@@ -20,15 +20,15 @@
 {-# LANGUAGE NoStarIsType #-}
 module VectorN where
 import qualified Data.Type.Equality as DTE
-import Data.Proxy
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal')
+import Data.Proxy ( Proxy(..) )
+import GHC.TypeNats ( KnownNat, Nat, natVal )
+import GHC.TypeLits ( Symbol )
 import Data.Kind (Type)
-import Control.Monad
+import Control.Monad ( replicateM )
 import Data.Foldable
 import Data.List (intercalate)
 import Control.Lens hiding (Cons)
-import Control.Applicative
+import Control.Applicative ( Applicative(liftA2) )
 import qualified Data.Semigroup as SG
 import PMonoid
 import PSemigroup

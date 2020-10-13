@@ -14,18 +14,18 @@
 {-# LANGUAGE NoStarIsType #-}
 module Test1 where
 import Data.Type.Equality
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal')
+import GHC.TypeNats (Nat, type(+))
+import GHC.TypeLits ( CmpSymbol )
 import PCombinators
 import VectorN
 import qualified Data.Symbol.Ascii as S
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.Functor.Compose
-import Data.Functor.Const
-import Data.These
+import Data.Functor.Compose ( Compose(Compose) )
+import Data.Functor.Const ( Const(Const) )
+import Data.These ( These(These, That, This) )
 import qualified Data.Monoid as MM
 import qualified Data.Semigroup as SG
-import Data.Ord
+import Data.Ord ( Down(Down) )
 
 type family SAS :: STA S0 A0 where
   SAS = 'STA (KSym1 '( 'A0, 'S0))

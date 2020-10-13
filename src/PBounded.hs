@@ -12,10 +12,10 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PBounded where
-import Data.Proxy
-import Data.Tagged
-import Data.Functor.Identity
-import Data.Functor.Const
+import Data.Proxy ( Proxy(..) )
+import Data.Tagged ( Tagged(Tagged) )
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Functor.Const ( Const(Const) )
 import qualified Data.Semigroup as SG
 
 class PBounded a where

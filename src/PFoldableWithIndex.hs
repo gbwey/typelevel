@@ -12,16 +12,16 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
 module PFoldableWithIndex where
-import Data.List.NonEmpty (NonEmpty(..))
 import PCore
 import PMonoid
 import PSemigroup
-import Data.Functor.Identity
-import Data.Functor.Compose
 import PFoldable
-import Data.Proxy
-import Data.Tagged
-import Control.Applicative
+import Data.List.NonEmpty (NonEmpty(..))
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Functor.Compose ( Compose(Compose) )
+import Data.Proxy ( Proxy(..) )
+import Data.Tagged ( Tagged(Tagged) )
+import Control.Applicative ( ZipList(ZipList) )
 import Data.Kind (Type)
 class PFoldable t => PFoldableWithIndex t where
   type family IfoldMap (arg :: FWI (t a) ~> a ~> m) (arg1 :: t a) :: m

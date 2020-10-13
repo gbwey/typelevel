@@ -54,9 +54,9 @@ module PCombinators
   , module PTraversableWithIndex
   ) where
 
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal',SomeNat(..),someNatVal)
-import GHC.Natural
+import GHC.TypeNats (natVal, type (-))
+import GHC.TypeLits (Nat, type (<=?), Symbol, KnownSymbol,KnownNat,symbolVal) 
+import GHC.Natural (Natural)
 import PAlign
 import PAlternative
 import PApplicative
@@ -92,8 +92,8 @@ import PState
 import PStateLR
 import PTraversable
 import PTraversableWithIndex
-import Data.Proxy
-import Data.Tagged
+import Data.Proxy ( Proxy(..) )
+import Data.Tagged ( Tagged(Tagged) )
 import qualified Data.Symbol.Ascii as S
 
 type XS = '["ss","b","c"]

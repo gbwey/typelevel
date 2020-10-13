@@ -13,19 +13,20 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PFunctor where
-import Data.Proxy
+import Data.Proxy ( Proxy(..) )
 import Data.Kind (Type)
-import Control.Lens hiding (Cons)
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Functor.Const ( Const(Const) )
 import qualified Data.Semigroup as SG
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.Functor.Compose
-import Data.These -- add a functor instance and semigroup etc
-import Data.Ord
+import Data.Functor.Compose ( Compose(Compose) )
+import Data.These ( These(..) ) -- add a functor instance and semigroup etc
+import Data.Ord ( Down(Down) )
 import PCore
-import Data.Tagged
-import Control.Applicative
-import Data.Functor.Product
-import Data.Void
+import Data.Tagged ( Tagged(Tagged) )
+import Control.Applicative ( ZipList(ZipList) )
+import Data.Functor.Product ( Product(..) )
+import Data.Void ( Void )
 
 class PFunctor (f :: Type -> Type) where
   type family Fmap (arg :: a ~> b) (arg1 :: f a) :: f b

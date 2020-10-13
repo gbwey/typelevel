@@ -13,10 +13,10 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PContravariant where
-import Data.Proxy
+import Data.Proxy ( Proxy(..) )
 import Data.Kind (Type)
-import Data.Functor.Compose
-import Data.Functor.Const
+import Data.Functor.Compose ( Compose(Compose) )
+import Data.Functor.Const ( Const(Const) )
 import PCore
 import PFunctor
 

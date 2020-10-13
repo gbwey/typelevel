@@ -13,13 +13,13 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PEnum where
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal')
+import GHC.TypeNats (type (-), type(+))
+import GHC.TypeLits (Nat,type (<=?),TypeError,ErrorMessage(Text, (:<>:), ShowType))
 import POrd
 import PCore
-import Data.Functor.Identity
-import Data.Type.Equality
 import PNum
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Type.Equality ( type (==) )
 
 class PEnum a where
   type family ToEnum (x :: Nat) :: a
@@ -37,7 +37,7 @@ class PEnum a where
   type family EnumFromTo (x :: a) (y :: a) :: [a]
 
   --need extra error statement 1+FromEnum y <=? FromEnum x
-  type EnumFromTo x y = Map ToEnumSym0 (IterateNat (FailWhen (1+FromEnum y <=? FromEnum x) ('Text "x > y") (FromEnum y - FromEnum x + 1)) SuccSym0 (FromEnum x))
+  type EnumFromTo x y = Map ToEnumSym0 (IterateNat (FailWhen (1 + FromEnum y <=? FromEnum x) ('Text "x > y") (FromEnum y - FromEnum x + 1)) SuccSym0 (FromEnum x))
 
   type family EnumFromThenTo (x :: a) (y :: a) (z :: a) :: [a]
 

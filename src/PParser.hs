@@ -14,7 +14,8 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PParser where
-import GHC.TypeLits
+import GHC.TypeNats (type (+), type(-))
+import GHC.TypeLits (Symbol,Nat,TypeError,ErrorMessage(..),type (<=?))
 import PCore
 import PEnum
 import PChar
@@ -32,7 +33,7 @@ import PFoldable
 import PStateLR
 import qualified Data.Semigroup as SG
 import qualified Data.Symbol.Ascii as S
-import Data.Type.Equality
+import Data.Type.Equality ( type (==) )
 
 type family PP s a where
   PP s a = STLR [Symbol] s a
@@ -316,15 +317,15 @@ instance PEnum Int' where
   type FromEnum ('Int' 'True n) = n
   type FromEnum ('Int' 'False n) = FailWhen (n==0) ('Text "FromEnum Int' failed cos negative n=-" ':<>: 'ShowType n) n
 
-  type ESucc ('Int' 'True n) = 'Int' 'True (n+1)
-  type ESucc ('Int' 'False n) = If (n==0) ('Int' 'True 1) ('Int' 'False (n-1))
+  type ESucc ('Int' 'True n) = 'Int' 'True (n + 1)
+  type ESucc ('Int' 'False n) = If (n==0) ('Int' 'True 1) ('Int' 'False (n - 1))
 
-  type EPred ('Int' 'True n) = If (n==0) ('Int' 'False 1) ('Int' 'True (n-1))
-  type EPred ('Int' 'False n) = 'Int' 'False (n+1)
+  type EPred ('Int' 'True n) = If (n==0) ('Int' 'False 1) ('Int' 'True (n - 1))
+  type EPred ('Int' 'False n) = 'Int' 'False (n + 1)
 
   type EnumFromTo x y =
          UnOrdering (Compare x y)
-                    (Iterate (1+FromEnum (PSub y x)) ESuccSym0 x)
+                    (Iterate (1 + FromEnum (PSub y x)) ESuccSym0 x)
                     '[]
                     (FailWhen  'True ('Text "EnumFromTo Int' failed cos x<y x=" ':<>: 'ShowType x ':<>: 'Text " y=" ':<>: 'ShowType y) Undefined)
 

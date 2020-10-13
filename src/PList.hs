@@ -14,7 +14,7 @@
 {-# LANGUAGE NoStarIsType #-}
 module PList where
 import PCore
-import GHC.TypeLits hiding (natVal,natVal')
+import GHC.TypeLits ( TypeError, ErrorMessage(Text) )
 import Data.Kind (Type)
 import Data.List.NonEmpty (NonEmpty(..))
 import PFoldable

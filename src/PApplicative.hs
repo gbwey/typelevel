@@ -14,9 +14,10 @@
 {-# LANGUAGE NoStarIsType #-}
 module PApplicative where
 import Data.Kind (Type)
-import Control.Lens hiding (Cons)
+import Data.Functor.Const (Const(Const))
+import Data.Functor.Identity (Identity(Identity))
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.Functor.Compose
+import Data.Functor.Compose ( Compose(Compose) )
 import PCore
 import PFunctor
 import PSemigroup

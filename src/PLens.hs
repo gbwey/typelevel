@@ -14,15 +14,15 @@
 {-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE NoStarIsType #-}
 module PLens where
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal')
+import GHC.TypeNats (type (-))
+import GHC.TypeLits (Nat, Symbol, TypeError, ErrorMessage(Text) )
 import PCore
 import PFunctor
 import PMonoid
 import PApplicative
 import PTraversable
-import Data.Functor.Identity
-import Data.Functor.Const
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Functor.Const ( Const(Const) )
 import qualified Data.Semigroup as SG
 import qualified Data.Monoid as MM
 import qualified Data.Symbol.Ascii as S
@@ -225,7 +225,7 @@ type instance Apply (IxListSym2 x y) z = IxList x y z
 
 type family IxNE (i :: Nat) (afb :: a ~> f a) (as :: NonEmpty a) :: f (NonEmpty a) where
   IxNE 0 afa (a ':| as) = FlipSym2 (TyCon2Sym1 '(:|)) as <$> (afa @@ a)
-  IxNE i afa (a ':| as) = TyCon2Sym2 '(:|) a <$> IxList (i-1) afa as
+  IxNE i afa (a ':| as) = TyCon2Sym2 '(:|) a <$> IxList (i - 1) afa as
 
 data IxNESym0 :: Nat ~> (a ~> f a) ~> NonEmpty a ~> f (NonEmpty a)
 type instance Apply IxNESym0 x = IxNESym1 x

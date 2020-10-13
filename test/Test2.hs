@@ -13,22 +13,22 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module Test2 where
-import GHC.TypeNats
+import GHC.TypeNats ( Nat, type (<=?), Div )
 import PCombinators
 import VectorN
 import FizzBuzz
 import qualified Data.Symbol.Ascii as S
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.Functor.Compose
-import Data.Functor.Identity
-import Data.These
+import Data.Functor.Compose ( Compose(Compose) )
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.These ( These(..) )
 import qualified Data.Monoid as MM
 import qualified Data.Semigroup as SG
-import Data.Proxy
-import Data.Tagged
-import Control.Applicative
-import Data.Constraint
-import Data.Void
+import Data.Proxy ( Proxy(..) )
+import Data.Tagged ( Tagged(Tagged) )
+import Control.Applicative ( ZipList(ZipList), Const )
+import Data.Constraint ( Constraint )
+import Data.Void ( Void )
 
 type family SAS :: STA S0 A0 where
   SAS = 'STA (KSym1 '( 'A0, 'S0))

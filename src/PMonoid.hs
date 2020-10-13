@@ -13,19 +13,19 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PMonoid where
-import GHC.TypeLits hiding (natVal,natVal')
-import Data.Constraint
+import GHC.TypeLits ( Symbol )
+import Data.Constraint ( Constraint )
 import qualified Data.Monoid as MM
 import qualified Data.Semigroup as SG
 import PCore
 import PSemigroup
 import PNum
-import Data.Functor.Const
-import Data.Functor.Identity
-import Data.Ord
-import Data.Tagged
-import Data.Proxy
-import Control.Applicative
+import Data.Functor.Const ( Const(Const) )
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Ord ( Down(Down) )
+import Data.Tagged ( Tagged(Tagged) )
+import Data.Proxy ( Proxy(..) )
+import Control.Applicative (ZipList(ZipList))
 import Data.Kind (Type)
 -- type family == type within class instance
 class PSemigroup a => PMonoid a where

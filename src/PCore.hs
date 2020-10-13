@@ -15,24 +15,24 @@
 {-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE NoStarIsType #-}
 module PCore where
-import Data.Type.Equality -- only using it for Nat ==. use PEq for all other uses!
-import Data.Constraint
-import GHC.Natural
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal')
+import Data.Type.Equality ( type (==) ) -- only using it for Nat ==. use PEq for all other uses!
+import Data.Constraint ( Constraint )
+import GHC.Natural ( Natural )
+import GHC.TypeNats (KnownNat,Nat,type (<=?),CmpNat,Div,Mod,Log2,natVal,type (-), type(+), type(*), type(^))
+import GHC.TypeLits (KnownSymbol,Symbol,TypeError,AppendSymbol,ErrorMessage(Text, (:<>:), ShowType),symbolVal)
 import Data.Kind (Type)
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.These
-import Data.Proxy
-import Data.Tagged
+import Data.These ( These(..) )
+import Data.Proxy ( Proxy(..) )
+import Data.Tagged ( Tagged )
 import qualified Data.Semigroup as SG
 import qualified Data.Monoid as MM
 import qualified Data.Symbol.Ascii as S
-import Data.Functor.Identity
-import Data.Functor.Compose
-import Data.Functor.Const
-import Data.Void
-import Control.Applicative
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Functor.Compose ( Compose(Compose) )
+import Data.Functor.Const ( Const(Const) )
+import Data.Void ( Void )
+import Control.Applicative (ZipList)
 
 -- Deep equals: required when looking at kinds
 -- Nat DTE.== Nat  is 'True but Nat PEq.== Nat is stuck
@@ -314,7 +314,7 @@ type instance Apply (UnfoldNatSym2 x y) z = UnfoldNat x y z
 
 type family UnfoldNat2 (f :: s ~> (a,s)) (n :: Nat) (x :: s) :: [a] where
   UnfoldNat2 _ 0 _ = '[]
-  UnfoldNat2 f n s = UnCurry ConsSym0 (Second (UnfoldNat2Sym2 f (n-1)) (f @@ s))
+  UnfoldNat2 f n s = UnCurry ConsSym0 (Second (UnfoldNat2Sym2 f (n - 1)) (f @@ s))
 
 data UnfoldNat2Sym0 :: (s ~> (a,s)) ~> Nat ~> s ~> [a]
 type instance Apply UnfoldNat2Sym0 x = UnfoldNat2Sym1 x
@@ -424,7 +424,7 @@ type family Second g a where Second g a = (***) Id g a
 
 type family ZipN (n :: Nat) (xs :: [a]) :: [(Nat,a)] where
   ZipN _ '[] = '[]
-  ZipN n (a ': as) = '(n,a) ': ZipN (n+1) as
+  ZipN n (a ': as) = '(n,a) ': ZipN (n + 1) as
 
 data ZipNSym0 :: Nat ~> [a] ~> [(Nat,a)]
 type instance Apply ZipNSym0 x = ZipNSym1 x
@@ -889,12 +889,12 @@ type family AA2 :: k -> k1 -> k2
 type family IterateNat (n :: Nat) (f :: k ~> k) (s :: k) :: [k] where
 --  IterateNat' f s n = UnfoldNat (f :..: FlipSym1 KSym0) s n -- 'True
   IterateNat 0 _ _ = '[]
-  IterateNat n f s = s ': IterateNat (n-1) f (f @@ s)
+  IterateNat n f s = s ': IterateNat (n - 1) f (f @@ s)
 
 type family IterateNat' (n :: Nat) (f :: k ~> k) (s :: k) :: k where
 --  IterateNat' f s n = UnfoldNat (f :..: FlipSym1 KSym0) s n -- 'True
   IterateNat' 0 _ s = s
-  IterateNat' n f s = IterateNat' (n-1) f (f @@ s)
+  IterateNat' n f s = IterateNat' (n - 1) f (f @@ s)
 
 data IterateNatSym0 :: Nat ~> (a ~> a) ~> a ~> a
 type instance Apply IterateNatSym0 x = IterateNatSym1 x
@@ -1204,7 +1204,7 @@ type family UnAll (x :: SG.All) where
 
 type family IToList' i as where
   IToList' _ '[] = '[]
-  IToList' i (a ': as) = '(i, a) ': IToList' (i+1) as
+  IToList' i (a ': as) = '(i, a) ': IToList' (i + 1) as
 
 type family SwapLR lr where
   SwapLR ('Left e) = 'Right e
@@ -1333,7 +1333,7 @@ type family FindIndex (arg :: a) (args :: [a]) :: Maybe Nat where
 type family FindIndexImpl (n :: Nat) (arg :: a) (args :: [a]) :: Maybe Nat where
   FindIndexImpl _ _ '[] = 'Nothing
   FindIndexImpl n a (a ': _) = 'Just n
-  FindIndexImpl n a0 (_ ': as) = FindIndexImpl (n+1) a0 as
+  FindIndexImpl n a0 (_ ': as) = FindIndexImpl (n + 1) a0 as
 
 type family FindAt (n :: Nat) (args :: [a]) :: Maybe a where
   FindAt n as = FindAtImpl 0 n as
@@ -1341,7 +1341,7 @@ type family FindAt (n :: Nat) (args :: [a]) :: Maybe a where
 type family FindAtImpl (n :: Nat) (arg :: Nat) (args :: [a]) :: Maybe a where
   FindAtImpl _ _ '[] = 'Nothing
   FindAtImpl i i (a ': _) = 'Just a
-  FindAtImpl i n (_ ': as) = FindAtImpl (i+1) n as
+  FindAtImpl i n (_ ': as) = FindAtImpl (i + 1) n as
 
 data FindAtSym0 :: Nat ~> [a] ~> Maybe a
 type instance Apply FindAtSym0 x = FindAtSym1 x

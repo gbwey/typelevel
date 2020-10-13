@@ -13,21 +13,21 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PFoldable where
-import GHC.TypeNats
+import GHC.TypeNats ( Nat, type (<=?) )
 import Data.Kind (Type)
 import Data.List.NonEmpty (NonEmpty(..))
 import PCore
 import PMonoid
 import POrd
 import PSemigroup
-import Data.Functor.Const
-import Data.Functor.Identity
-import Data.Functor.Compose
+import Data.Functor.Const ( Const(Const) )
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Functor.Compose ( Compose(Compose) )
 import qualified Data.Semigroup as SG
-import Data.These
-import Data.Proxy
-import Data.Tagged
-import Control.Applicative
+import Data.These ( These(..) )
+import Data.Proxy ( Proxy(..) )
+import Data.Tagged ( Tagged(Tagged) )
+import Control.Applicative (ZipList(ZipList))
 
 class PFoldable (t :: Type -> Type) where
   type family FoldMap (arg :: a ~> m) (arg1 :: t a) :: m

@@ -15,14 +15,14 @@
 module PTraversableWithIndex where
 import Data.List.NonEmpty (NonEmpty(..))
 import PCore
-import Data.Functor.Identity
-import Data.Functor.Compose
 import PFunctorWithIndex
 import PFoldableWithIndex
 import PTraversable
-import Data.Proxy
-import Data.Tagged
-import Control.Applicative
+import Data.Proxy ( Proxy )
+import Data.Tagged ( Tagged )
+import Control.Applicative ( ZipList )
+import Data.Functor.Identity ( Identity )
+import Data.Functor.Compose ( Compose )
 
 -- todo: how to enforce Applicative constraint for f in the Itraverse method
 class (Traversable t, PFunctorWithIndex t, PFoldableWithIndex t) => PTraversableWithIndex t where

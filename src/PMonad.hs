@@ -14,18 +14,18 @@
 {-# LANGUAGE NoStarIsType #-}
 module PMonad where
 import Data.Kind (Type)
-import Control.Lens hiding (Cons)
+import Data.Functor.Identity ( Identity(Identity) )
 import PCore
 import PSemigroup
 import PMonoid
 import PApplicative
 import PFunctor
-import Data.These
-import Data.Ord
+import Data.These ( These(..) )
+import Data.Ord ( Down(Down) )
 import qualified Data.Semigroup as SG
-import Data.Proxy
-import Data.Tagged
-import Control.Applicative
+import Data.Proxy ( Proxy(..) )
+import Data.Tagged ( Tagged(Tagged) )
+import Control.Applicative ( ZipList(ZipList) )
 
 class PApplicative m => PMonad (m :: Type -> Type) where
   type family Return (arg :: a) :: m a

@@ -13,13 +13,13 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PBifunctor where
-import Data.Proxy
+import Data.Proxy ( Proxy(..) )
 import Data.Kind (Type)
 import Data.Bifunctor
-import Data.These
+import Data.These ( These(..) )
 import PCore
-import Data.Functor.Const
-import Data.Tagged
+import Data.Functor.Const ( Const(Const) )
+import Data.Tagged ( Tagged(Tagged) )
 import qualified Data.Semigroup as SG
 
 class PBifunctor (bi :: k1 -> k2 -> Type) where

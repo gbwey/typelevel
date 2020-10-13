@@ -13,14 +13,14 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 module PNum where
-import GHC.TypeNats
-import GHC.TypeLits hiding (natVal,natVal')
+import GHC.TypeNats (type(+), type(*))
+import GHC.TypeLits (Nat,TypeError,ErrorMessage(ShowType, (:<>:), Text)) 
 import Data.Kind (Type)
 import PCore
-import Data.Functor.Identity
-import Data.Ord
+import Data.Functor.Identity ( Identity(Identity) )
+import Data.Ord ( Down(Down) )
 import qualified Data.Semigroup as SG
-import Control.Applicative
+import Data.Functor.Const (Const(Const))
 
 class PNum (a :: Type) where
   type family FromInteger (n :: Nat) :: a
@@ -32,8 +32,17 @@ class PNum (a :: Type) where
   type family PAdd (n :: a) (n1 :: a) :: a
   type PAdd n n1 = FromInteger (ToInteger n + ToInteger n1)
 
+  --type family (+) (n :: a) (n1 :: a) :: a
+  --type n + n1 = FromInteger (ToInteger n + ToInteger n1)
+
   type family PSub (n :: a) (n1 :: a) :: a
   type PSub n n1 = FromInteger (Subtract (ToInteger n) (ToInteger n1))
+
+  --type family (-) (n :: a) (n1 :: a) :: a
+  --type n - n1 = FromInteger (Subtract (ToInteger n) (ToInteger n1))
+
+  --type family (*) (n :: a) (n1 :: a) :: a
+  --type n * n1 = FromInteger (ToInteger n * ToInteger n1)
 
   type family PMult (n :: a) (n1 :: a) :: a
   type PMult n n1 = FromInteger (ToInteger n * ToInteger n1)
