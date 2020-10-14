@@ -15,12 +15,11 @@
 {-# LANGUAGE NoStarIsType #-}
 module FizzBuzz where
 import GHC.TypeNats ( Nat, Mod )
-import GHC.TypeLits ( KnownSymbol, Symbol, symbolVal )
+import GHC.TypeLits (Symbol)
 import PCore
 import Data.Type.Equality ( type (==) )
 import PChar ( NatToString )
 import PSemigroup
-import Data.Proxy ( Proxy(Proxy) )
 
 type family Fizz (n :: Nat) :: Maybe Symbol where
   Fizz n = If (n `Mod` 3 == 0) ('Just "Fizz") 'Nothing
@@ -40,33 +39,7 @@ type instance Apply FizzSym0 x = Fizz x
 
 data BuzzSym0 :: Nat ~> Maybe Symbol
 type instance Apply BuzzSym0 x = Buzz x
-
---t1 :: ((FizzBuzz 15 ~ "ss") => ()) -> ()
---t1 () = ()
-
-t2 :: forall n . KnownSymbol (FizzBuzz n) => String
-t2 = symbolVal (Proxy @(FizzBuzz n))
-
 {-
->t2 @15
-"FizzBuzz"
-it :: String
->t2 @14
-"14"
-it :: String
->t2 @13
-"13"
-it :: String
--}
-
-t3 :: forall (ns :: [Nat]) ss . (ss ~ Map FizzBuzzSym0 ns, GetStrings ss) => [String]
-t3 = getStrings @ss
-
-{-
->t3 @'[1,5,3,4,15]
-["1","Buzz","Fizz","4","FizzBuzz"]
-it :: [String]
-
 >:kind! Map (AmpSym2 Id FizzBuzzSym0) (EnumFromTo 0 15)
 Map (AmpSym2 Id FizzBuzzSym0) (EnumFromTo 0 15) :: [(Nat, Symbol)]
 = '['(0, "FizzBuzz"), '(1, "1"), '(2, "2"), '(3, "Fizz"),

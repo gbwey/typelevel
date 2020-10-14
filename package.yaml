@@ -36,6 +36,7 @@ library:
      ghc-options:
      - -fwrite-ide-info
      - -hiedir=.hie
+     - -Widentities
 
 tests:
   typelevel-test:
@@ -57,6 +58,7 @@ tests:
        ghc-options:
        - -fwrite-ide-info
        - -hiedir=.hie
+       - -Widentities
     dependencies:
     - typelevel
     - tasty
