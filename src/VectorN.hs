@@ -254,7 +254,7 @@ m2 :: Mat 5 2 Int
 m2 = mkMat [7..]
 
 vdot :: Num a => Vec n a -> Vec n a -> a
-vdot = (sum .) . vzip (*)
+vdot = (foldl' (+) 0 .) . vzip (*)
 
 class VPure n where
   vpure :: a -> Vec n a
@@ -283,15 +283,18 @@ showMat :: forall m n a . (NToInts (Dim (Vec m (Vec n a))), Show a)
 showMat mat = "@" ++ show (dimsP (toproxy mat)) ++ "\n" ++ intercalate "\n" (map (show . toList) (toList mat))
 
 newtype ST s a = ST { unST :: s -> (a, s) }
+
 instance Functor (ST s) where
   fmap f (ST g) = ST $ \s -> let (a, s') = g s in (f a, s')
+
 instance Applicative (ST s) where
   pure a = ST (a,)
   ST sab <*> ST sa = ST $ \s -> let (ab,s') = sab s
                                     (a,s'') = sa s'
                                 in (ab a, s'')
+
 instance Monad (ST s) where
-  return a = ST (a,)
+  return = pure
   ST sa >>= amb = ST $ \s -> let (a, s') = sa s
                              in unST (amb a) s'
 
