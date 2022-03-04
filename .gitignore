@@ -1,7 +1,8 @@
 .stack-work/
 *~
-.stack-work-profile/
+.stack-work-profiling/
 .ghc.environment.x86_64-mingw32*
 dist-newstyle/
 .hie/
 stack*.yaml.lock
+stan.html

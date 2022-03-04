@@ -604,10 +604,11 @@ type instance Apply (OrSym1 x) y = x || y
 
 
 type family Impl (a :: Bool) (b :: Bool) :: Bool where
-  Impl 'True x = x
   Impl 'False _ = 'True
-  Impl x 'True = x
+  Impl 'True x = x
   Impl _ 'False = 'True
+  Impl _ 'True = 'True
+  Impl x x = 'True
 
 data ImplSym0 :: Bool ~> Bool ~> Bool
 type instance Apply ImplSym0 x = ImplSym1 x

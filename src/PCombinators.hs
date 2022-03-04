@@ -6,11 +6,9 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE NoStarIsType #-}
@@ -55,7 +53,7 @@ module PCombinators
   ) where
 
 import GHC.TypeNats (type (-))
-import GHC.TypeLits (type (<=?)) 
+import GHC.TypeLits (type (<=?))
 import PAlign
 import PAlternative
 import PApplicative

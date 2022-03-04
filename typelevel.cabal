@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f85c19b897001c678523999f6ea335d8f451eb183fa64b447a98774e7cb996ac
+-- hash: ccb020dc34e9181f6d494e09492af6ea9b9a12620c508ab336e3a062c21cf220
 
 name:           typelevel
 version:        0.1.0.0
@@ -74,7 +74,7 @@ library
     , tagged
     , these >=1.0.0
   if impl(ghc >= 8.8)
-    ghc-options: -fwrite-ide-info -hiedir=.hie -Widentities
+    ghc-options: -fwrite-ide-info -hiedir=.hie
   default-language: Haskell2010
 
 test-suite typelevel-test
@@ -101,5 +101,5 @@ test-suite typelevel-test
     , these >=1.0.0
     , typelevel
   if impl(ghc >= 8.8)
-    ghc-options: -fwrite-ide-info -hiedir=.hie -Widentities
+    ghc-options: -fwrite-ide-info -hiedir=.hie
   default-language: Haskell2010

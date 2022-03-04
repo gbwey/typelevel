@@ -1,4 +1,4 @@
-{-# OPTIONS -Wno-redundant-constraints #-}
+--  {-# OPTIONS -Wno-redundant-constraints #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
